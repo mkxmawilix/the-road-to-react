@@ -1,0 +1,13 @@
+.game-list-table {
+    width: 40%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    border: 1px solid #ddd;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.game-list-table th, .game-list-table td {
+    text-align: left;
+    padding: 16px;
+}
