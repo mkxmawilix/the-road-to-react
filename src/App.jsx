@@ -6,7 +6,7 @@ const welcome = {
   name: 'Mkxm'
 };
 
-const games = [
+const list = [
   {
     objectID: 1,
     name: 'Half-Life',
@@ -30,7 +30,7 @@ const games = [
 ];
 
 
-function App() {
+const App = () => {
   return (
     <div>
       <h1>{welcome.greeting} {welcome.title}</h1>
@@ -41,9 +41,9 @@ function App() {
       <TableGames />
     </div>
   );
-}
+};
 
-function TableGames() {
+const TableGames = () => {
   return (
     <div>
       <h2>Games list</h2>
@@ -56,36 +56,36 @@ function TableGames() {
             <th>Available</th>
           </tr>
         </thead>
-        <ListGames />
+        <List />
       </table>
     </div>
   );
-}
+};
 
-function ListGames() {
+const List = () => {
   return (
     <tbody>
-      {games.map(function (game) {
+      {list.map((item) => {
         return (
-          <tr key={game.objectID}>
-            <td>{game.name}</td>
-            <td>{game.price}</td>
-            <td>{game.category}</td>
-            <td>{game.available ? 'Yes' : 'No'}</td>
+          <tr key={item.objectID}>
+            <td>{item.name}</td>
+            <td>{item.price}</td>
+            <td>{item.category}</td>
+            <td>{item.available ? 'Yes' : 'No'}</td>
           </tr>
         );
       })}
     </tbody>
   );
-}
+};
 
-function Search() {
+const Search = () => {
   return (
     <div>
       <label htmlFor="search">Search: </label>
       <input id="search" type="text" />
     </div>
   );
-}
+};
 
 export default App;
