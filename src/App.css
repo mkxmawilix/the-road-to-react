@@ -11,3 +11,20 @@
     text-align: left;
     padding: 16px;
 }
+
+.game-list-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.game-list-table th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.search-attribute-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
