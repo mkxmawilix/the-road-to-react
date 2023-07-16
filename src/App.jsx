@@ -10,7 +10,7 @@ const App = () => {
     name: 'Mkxm'
   };
 
-  const [searchTerms, setSearchTerm] = React.useState({name: '', category: '', price: ''});
+  const [searchTerms, setSearchTerm] = React.useState({ name: '', category: '', price: '' });
   const handleSearch = (event) => {
     setSearchTerm(
       {
@@ -64,7 +64,7 @@ const TableGames = (props) => {
     }
   ];
 
-  const {name, category, price} = props.filterTable;
+  const { name, category, price } = props.filterTable;
   return (
     <div>
       <h2>Games list</h2>
@@ -94,39 +94,42 @@ const TableGames = (props) => {
   );
 };
 
-const List = (props) => {
-  const gamesData = props.gamesList;
-  return (
-    <tbody>
-      {gamesData.map((item, index) => {
-        return (<ListItem key={index} item={item} />);
-      })}
-    </tbody>
-  );
-};
+const List = ({ gamesList }) => (
+  <tbody>
+    {gamesList.map((item, index) => {
+      return (<ListItem key={index} item={item} />);
+    })}
+  </tbody>
+);
 
-const ListItem = (props) => (
+
+const ListItem = ({ item }) => (
   <tr>
-    <td>{props.item.name}</td>
-    <td>{props.item.price}</td>
-    <td>{props.item.category}</td>
-    <td>{props.item.available ? 'Yes' : 'No'}</td>
+    <td>{item.name}</td>
+    <td>{item.price}</td>
+    <td>{item.category}</td>
+    <td>{item.available ? 'Yes' : 'No'}</td>
   </tr>
-)
+);
 
-const Search = (props) => {
-  return (
-    <div>
-      <label htmlFor="search">Search: </label><br />
-      <div className="search-attribute-container">
-        <div className="search-attributes">Name <input id="search-by-name" type="text" onChange={props.onSearch} /></div>
-        <div className="search-attributes">Category <input id="search-by-category" type="text" onChange={props.onSearch} /></div>
-        <div className="search-attributes">Price <input id="search-price" type="text" onChange={props.onSearch} /></div>
-      </div>
-      <p>Searching for <strong>{props.inputValue}</strong></p>
+
+const Search = ({ onSearch, inputSearchValues }) => (
+  <div>
+    <label id="label-search" htmlFor="search">Search: </label><br />
+    <div className="search-attribute-container">
+      <div className="search-attributes">Name <input id="search-by-name" type="text" onChange={onSearch} value={inputSearchValues.name} /></div>
+      <div className="search-attributes">Category <input id="search-by-category" type="text" onChange={onSearch} value={inputSearchValues.category} /></div>
+      <div className="search-attributes">Price <input id="search-price" type="text" onChange={onSearch} value={inputSearchValues.price} /></div>
     </div>
-  );
-};
+    <p>Searching for
+      <ul>
+        {inputSearchValues.name !== '' ? <li>name: {inputSearchValues.name}</li> : ''}
+        {inputSearchValues.category !== '' ? <li>category: {inputSearchValues.category}</li> : ''}
+        {inputSearchValues.price !== '' ? <li>price: {inputSearchValues.price}</li> : ''}
+      </ul>
+    </p>
+  </div>
+);
 
 TableGames.propTypes = {
   filterTable: PropTypes.string,
@@ -140,6 +143,7 @@ ListItem.propTypes = {
 Search.propTypes = {
   onSearch: PropTypes.func,
   inputValue: PropTypes.string,
+  inputSearchValues: PropTypes.object,
 };
 
 export default App;

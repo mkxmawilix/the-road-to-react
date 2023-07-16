@@ -28,3 +28,9 @@
     align-items: center;
     margin-bottom: 20px;
 }
+
+#label-search {
+    font-size: large;
+    font-weight: bold;
+    text-decoration: underline;
+}
