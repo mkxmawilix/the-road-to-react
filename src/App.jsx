@@ -10,7 +10,14 @@ const App = () => {
     name: 'Mkxm'
   };
 
-  const [searchTerms, setSearchTerm] = React.useState({ name: '', category: '', price: '' });
+  const searchTermsStorage = JSON.parse(localStorage.getItem('searchTermsObject')) || { name: '', category: '', price: '' };
+
+  const [searchTerms, setSearchTerm] = React.useState({...searchTermsStorage});
+
+  React.useEffect(() => {
+    localStorage.setItem('searchTermsObject', JSON.stringify(searchTerms));
+  }, [searchTerms]);
+
   const handleSearch = (event) => {
     setSearchTerm(
       {
@@ -18,6 +25,7 @@ const App = () => {
         [event.target.id === 'search-by-name' ? 'name' : event.target.id === 'search-by-category' ? 'category' : 'price']: event.target.value
       }
     );
+
   };
 
   return (
@@ -27,12 +35,12 @@ const App = () => {
 
       <Search onSearch={handleSearch} inputSearchValues={searchTerms} />
 
-      <TableGames filterTable={searchTerms} />
+      <TableGames searchName={searchTerms.name} searchCategory={searchTerms.category} searchPrice={searchTerms.price} />
     </div>
   );
 };
 
-const TableGames = (props) => {
+const TableGames = ({ searchName, searchCategory, searchPrice }) => {
   const games = [
     {
       objectID: 1,
@@ -64,7 +72,6 @@ const TableGames = (props) => {
     }
   ];
 
-  const { name, category, price } = props.filterTable;
   return (
     <div>
       <h2>Games list</h2>
@@ -78,13 +85,13 @@ const TableGames = (props) => {
           </tr>
         </thead>
         <List gamesList={games.filter((el) => {
-          if (name === '' && category === '' && price === '') {
+          if (searchName === '' && searchCategory === '' && searchPrice === '') {
             return el;
-          } else if (name !== '' && el.name.toLowerCase().includes(name.toLowerCase())) {
+          } else if (searchName !== '' && el.name.toLowerCase().includes(searchName.toLowerCase())) {
             return el;
-          } else if (category !== '' && el.category.toLowerCase().includes(category.toLowerCase())) {
+          } else if (searchCategory !== '' && el.category.toLowerCase().includes(searchCategory.toLowerCase())) {
             return el;
-          } else if (price !== '' && el.price <= price) {
+          } else if (searchPrice !== '' && el.price <= searchPrice) {
             return el;
           }
           return null;
@@ -121,18 +128,20 @@ const Search = ({ onSearch, inputSearchValues }) => (
       <div className="search-attributes">Category <input id="search-by-category" type="text" onChange={onSearch} value={inputSearchValues.category} /></div>
       <div className="search-attributes">Price <input id="search-price" type="text" onChange={onSearch} value={inputSearchValues.price} /></div>
     </div>
-    <p>Searching for
+    <div>Searching for
       <ul>
         {inputSearchValues.name !== '' ? <li>name: {inputSearchValues.name}</li> : ''}
         {inputSearchValues.category !== '' ? <li>category: {inputSearchValues.category}</li> : ''}
         {inputSearchValues.price !== '' ? <li>price: {inputSearchValues.price}</li> : ''}
       </ul>
-    </p>
+    </div>
   </div>
 );
 
 TableGames.propTypes = {
-  filterTable: PropTypes.string,
+  searchName: PropTypes.string,
+  searchCategory: PropTypes.string,
+  searchPrice: PropTypes.string,
 };
 List.propTypes = {
   gamesList: PropTypes.arrayOf(PropTypes.object),
