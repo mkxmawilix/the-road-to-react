@@ -16,39 +16,8 @@ const useObjectStorageState = (key, initialState) => {
 
 const App = () => {
 
-  const welcome = {
-    greeting: 'Hey',
-    title: 'React',
-    name: 'Mkxm'
-  };
-
-  const searchTermsStorage = JSON.parse(localStorage.getItem('searchTermsObject')) || { name: '', category: '', price: '' };
-  const [searchTerms, setSearchTerm] = useObjectStorageState('searchTermsObject', { ...searchTermsStorage });
-
-  const handleSearch = (event) => {
-    setSearchTerm(
-      {
-        ...searchTerms,
-        [event.target.id === 'search-by-name' ? 'name' : event.target.id === 'search-by-category' ? 'category' : 'price']: event.target.value
-      }
-    );
-
-  };
-
-  return (
-    <div>
-      <h1>{welcome.greeting} {welcome.title}</h1>
-      <p>My name is {welcome.name}</p>
-
-      <Search onSearch={handleSearch} inputSearchValues={searchTerms}>Search:</Search>
-
-      <TableGames searchName={searchTerms.name} searchCategory={searchTerms.category} searchPrice={searchTerms.price} />
-    </div>
-  );
-};
-
-const TableGames = ({ searchName, searchCategory, searchPrice }) => {
-  const games = [
+  // Initialize default games list
+  const initialGames = [
     {
       objectID: 1,
       name: 'Half-Life',
@@ -79,6 +48,46 @@ const TableGames = ({ searchName, searchCategory, searchPrice }) => {
     }
   ];
 
+  // Defines state for games, set initial state to default games
+  const [games, setGames] = React.useState(initialGames);
+
+  // Removes item from games list, set new games list (should be called on remove button click)
+  const handleRemoveItem = (item) => {
+    const newGames = games.filter((game) => item.objectID !== game.objectID);
+    setGames(newGames);
+  };
+
+  // Get search terms from local storage, if not found set default values
+  const searchTermsStorage = JSON.parse(localStorage.getItem('searchTermsObject')) || { name: '', category: '', price: '' };
+
+  // Define state for search terms, set initial state to search terms from local storage
+  const [searchTerms, setSearchTerm] = useObjectStorageState('searchTermsObject', { ...searchTermsStorage });
+
+  // Handle search input change (should be called on every input change)
+  const handleSearch = (event) => {
+    setSearchTerm(
+      {
+        ...searchTerms,
+        [event.target.id === 'search-by-name' ? 'name' : event.target.id === 'search-by-category' ? 'category' : 'price']: event.target.value
+      }
+    );
+
+  };
+
+  return (
+    <div>
+      <h1>The road to React</h1>
+
+      <Search onSearch={handleSearch} inputSearchValues={searchTerms}>Search:</Search>
+
+      <TableGames searchName={searchTerms.name} searchCategory={searchTerms.category} searchPrice={searchTerms.price} games={games} onRemoveItem={handleRemoveItem} />
+    </div>
+  );
+};
+
+// Table component
+const TableGames = ({ searchName, searchCategory, searchPrice, games, onRemoveItem }) => {
+
   return (
     <div>
       <h2>Games list</h2>
@@ -89,6 +98,7 @@ const TableGames = ({ searchName, searchCategory, searchPrice }) => {
             <th>Price</th>
             <th>Category</th>
             <th>Available</th>
+            <th></th>
           </tr>
         </thead>
         <List gamesList={games.filter((el) => {
@@ -102,31 +112,41 @@ const TableGames = ({ searchName, searchCategory, searchPrice }) => {
             return el;
           }
           return null;
-        })} />
+        })} onRemoveItem={onRemoveItem} />
       </table>
     </div>
   );
 };
 
-const List = ({ gamesList }) => (
-  <tbody>
-    {gamesList.map((item, index) => {
-      return (<ListItem key={index} item={item} />);
-    })}
-  </tbody>
-);
+// List component
+const List = ({ gamesList, onRemoveItem }) => {
+  return (
+    <tbody>
+      {gamesList.map((item) => {
+        return (<ListItem key={item.objectID} item={item} onRemoveItem={onRemoveItem} />);
+      })}
+    </tbody>
+  );
+};
 
+// List item component
+const ListItem = ({ item, onRemoveItem }) => {
+  const handleRemoveItem = () => {
+    onRemoveItem(item);
+  };
 
-const ListItem = ({ item }) => (
-  <tr>
-    <td>{item.name}</td>
-    <td>{item.price}</td>
-    <td>{item.category}</td>
-    <td>{item.available ? 'Yes' : 'No'}</td>
-  </tr>
-);
+  return (
+    <tr>
+      <td>{item.name}</td>
+      <td>{item.price}</td>
+      <td>{item.category}</td>
+      <td>{item.available ? 'Yes' : 'No'}</td>
+      <td><button onClick={handleRemoveItem}>Remove</button></td>
+    </tr>
+  );
+};
 
-
+// Input component
 const InputWithLabel = ({ id, type = "text", onChange, value, isFocused, children }) => {
   const inputRef = React.useRef();
 
@@ -143,6 +163,7 @@ const InputWithLabel = ({ id, type = "text", onChange, value, isFocused, childre
   );
 };
 
+// Search component
 const Search = ({ onSearch, inputSearchValues, children }) => (
   <>
     <label id="label-search" htmlFor="search">{children}</label><br />
@@ -161,16 +182,21 @@ const Search = ({ onSearch, inputSearchValues, children }) => (
   </>
 );
 
+// PropTypes
 TableGames.propTypes = {
   searchName: PropTypes.string,
   searchCategory: PropTypes.string,
   searchPrice: PropTypes.string,
+  games: PropTypes.arrayOf(PropTypes.object),
+  onRemoveItem: PropTypes.func,
 };
 List.propTypes = {
   gamesList: PropTypes.arrayOf(PropTypes.object),
+  onRemoveItem: PropTypes.func,
 };
 ListItem.propTypes = {
   item: PropTypes.object,
+  onRemoveItem: PropTypes.func,
 };
 InputWithLabel.propTypes = {
   id: PropTypes.string,
