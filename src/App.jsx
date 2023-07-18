@@ -2,6 +2,18 @@ import './App.css';
 import React from 'react';
 import PropTypes from "prop-types";
 
+
+const useObjectStorageState = (key, initialState) => {
+  const [valuesObject, setvaluesObject] = React.useState({...initialState});
+
+  React.useEffect(() => {
+    localStorage.setItem(key, JSON.stringify(valuesObject));
+  }, [valuesObject, key]);
+
+  return [valuesObject, setvaluesObject];
+};
+
+
 const App = () => {
 
   const welcome = {
@@ -11,12 +23,7 @@ const App = () => {
   };
 
   const searchTermsStorage = JSON.parse(localStorage.getItem('searchTermsObject')) || { name: '', category: '', price: '' };
-
-  const [searchTerms, setSearchTerm] = React.useState({...searchTermsStorage});
-
-  React.useEffect(() => {
-    localStorage.setItem('searchTermsObject', JSON.stringify(searchTerms));
-  }, [searchTerms]);
+  const [searchTerms, setSearchTerm] = useObjectStorageState('searchTermsObject', {...searchTermsStorage});
 
   const handleSearch = (event) => {
     setSearchTerm(
