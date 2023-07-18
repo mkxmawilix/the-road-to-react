@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 
 
 const useObjectStorageState = (key, initialState) => {
-  const [valuesObject, setvaluesObject] = React.useState({...initialState});
+  const [valuesObject, setvaluesObject] = React.useState({ ...initialState });
 
   React.useEffect(() => {
     localStorage.setItem(key, JSON.stringify(valuesObject));
@@ -23,7 +23,7 @@ const App = () => {
   };
 
   const searchTermsStorage = JSON.parse(localStorage.getItem('searchTermsObject')) || { name: '', category: '', price: '' };
-  const [searchTerms, setSearchTerm] = useObjectStorageState('searchTermsObject', {...searchTermsStorage});
+  const [searchTerms, setSearchTerm] = useObjectStorageState('searchTermsObject', { ...searchTermsStorage });
 
   const handleSearch = (event) => {
     setSearchTerm(
@@ -40,7 +40,7 @@ const App = () => {
       <h1>{welcome.greeting} {welcome.title}</h1>
       <p>My name is {welcome.name}</p>
 
-      <Search onSearch={handleSearch} inputSearchValues={searchTerms} />
+      <Search onSearch={handleSearch} inputSearchValues={searchTerms}>Search:</Search>
 
       <TableGames searchName={searchTerms.name} searchCategory={searchTerms.category} searchPrice={searchTerms.price} />
     </div>
@@ -127,19 +127,29 @@ const ListItem = ({ item }) => (
 );
 
 
-const InputWithLabel = ({ id, type="text", onChange, value }) => (
-  <>
-    <input id={id} type={type} onChange={onChange} value={value} />
-  </>
-);
+const InputWithLabel = ({ id, type = "text", onChange, value, isFocused, children }) => {
+  const inputRef = React.useRef();
 
-const Search = ({ onSearch, inputSearchValues }) => (
+  React.useEffect(() => {
+    if (isFocused) {
+      inputRef.current.focus();
+    }
+  }, [isFocused]);
+
+  return (
+    <>
+      <label htmlFor={id}>{children} </label><input ref={inputRef} id={id} type={type} onChange={onChange} value={value} autoFocus={isFocused} />
+    </>
+  );
+};
+
+const Search = ({ onSearch, inputSearchValues, children }) => (
   <>
-    <label id="label-search" htmlFor="search">Search: </label><br />
+    <label id="label-search" htmlFor="search">{children}</label><br />
     <div className="search-attribute-container">
-      <div className="search-attribute">Name <InputWithLabel id="search-by-name" onChange={onSearch} value={inputSearchValues.name} /> </div>
-      <div className="search-attribute">Category <InputWithLabel id="search-by-category" onChange={onSearch} value={inputSearchValues.category} /> </div>
-      <div className="search-attribute">Price <InputWithLabel id="search-price" onChange={onSearch} value={inputSearchValues.price} /> </div>
+      <div className="search-attribute"><InputWithLabel id="search-by-name" onChange={onSearch} value={inputSearchValues.name} isFocused>Name</InputWithLabel></div>
+      <div className="search-attribute"><InputWithLabel id="search-by-category" onChange={onSearch} value={inputSearchValues.category} >Category</InputWithLabel></div>
+      <div className="search-attribute"><InputWithLabel id="search-price" onChange={onSearch} value={inputSearchValues.price} >Price</InputWithLabel></div>
     </div>
     <div>Searching for
       <ul>
@@ -167,11 +177,14 @@ InputWithLabel.propTypes = {
   type: PropTypes.string,
   onChange: PropTypes.func,
   value: PropTypes.string,
+  children: PropTypes.node,
+  isFocused: PropTypes.bool,
 };
 Search.propTypes = {
   onSearch: PropTypes.func,
   inputValue: PropTypes.string,
   inputSearchValues: PropTypes.object,
+  children: PropTypes.node,
 };
 
 export default App;
