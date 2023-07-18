@@ -127,13 +127,19 @@ const ListItem = ({ item }) => (
 );
 
 
+const InputWithLabel = ({ id, type="text", onChange, value }) => (
+  <>
+    <input id={id} type={type} onChange={onChange} value={value} />
+  </>
+);
+
 const Search = ({ onSearch, inputSearchValues }) => (
-  <div>
+  <>
     <label id="label-search" htmlFor="search">Search: </label><br />
     <div className="search-attribute-container">
-      <div className="search-attributes">Name <input id="search-by-name" type="text" onChange={onSearch} value={inputSearchValues.name} /></div>
-      <div className="search-attributes">Category <input id="search-by-category" type="text" onChange={onSearch} value={inputSearchValues.category} /></div>
-      <div className="search-attributes">Price <input id="search-price" type="text" onChange={onSearch} value={inputSearchValues.price} /></div>
+      <div className="search-attribute">Name <InputWithLabel id="search-by-name" onChange={onSearch} value={inputSearchValues.name} /> </div>
+      <div className="search-attribute">Category <InputWithLabel id="search-by-category" onChange={onSearch} value={inputSearchValues.category} /> </div>
+      <div className="search-attribute">Price <InputWithLabel id="search-price" onChange={onSearch} value={inputSearchValues.price} /> </div>
     </div>
     <div>Searching for
       <ul>
@@ -142,7 +148,7 @@ const Search = ({ onSearch, inputSearchValues }) => (
         {inputSearchValues.price !== '' ? <li>price: {inputSearchValues.price}</li> : ''}
       </ul>
     </div>
-  </div>
+  </>
 );
 
 TableGames.propTypes = {
@@ -155,6 +161,12 @@ List.propTypes = {
 };
 ListItem.propTypes = {
   item: PropTypes.object,
+};
+InputWithLabel.propTypes = {
+  id: PropTypes.string,
+  type: PropTypes.string,
+  onChange: PropTypes.func,
+  value: PropTypes.string,
 };
 Search.propTypes = {
   onSearch: PropTypes.func,
