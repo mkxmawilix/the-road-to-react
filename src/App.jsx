@@ -130,21 +130,15 @@ const List = ({ gamesList, onRemoveItem }) => {
 };
 
 // List item component
-const ListItem = ({ item, onRemoveItem }) => {
-  const handleRemoveItem = () => {
-    onRemoveItem(item);
-  };
-
-  return (
+const ListItem = ({ item, onRemoveItem }) => (
     <tr>
       <td>{item.name}</td>
       <td>{item.price}</td>
       <td>{item.category}</td>
       <td>{item.available ? 'Yes' : 'No'}</td>
-      <td><button onClick={handleRemoveItem}>Remove</button></td>
+      <td><button onClick={() => onRemoveItem(item)}>Remove</button></td>
     </tr>
-  );
-};
+);
 
 // Input component
 const InputWithLabel = ({ id, type = "text", onChange, value, isFocused, children }) => {
