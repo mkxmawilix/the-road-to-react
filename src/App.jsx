@@ -1,6 +1,7 @@
 import './App.css';
 import React from 'react';
 import PropTypes from "prop-types";
+import { v4 as uuidv4 } from 'uuid';
 
 
 const useObjectStorageState = (key, initialState) => {
@@ -19,28 +20,28 @@ const App = () => {
   // Initialize default games list
   const initialGames = [
     {
-      objectID: 1,
+      objectID: uuidv4(),
       name: 'Half-Life',
       price: 19.99,
       category: 'FPS',
       available: true,
     },
     {
-      objectID: 2,
+      objectID: uuidv4(),
       name: 'Pubg',
       price: 59.99,
       category: 'FPS',
       available: true,
     },
     {
-      objectID: 3,
+      objectID: uuidv4(),
       name: 'Payday 3',
       price: 79.99,
       category: 'FPS',
       available: false,
     },
     {
-      objectID: 4,
+      objectID: uuidv4(),
       name: 'Ashes of Creation',
       price: 89.99,
       category: 'MMORPG',
@@ -56,6 +57,30 @@ const App = () => {
     const newGames = games.filter((game) => item.objectID !== game.objectID);
     setGames(newGames);
   };
+
+  // Define refs for add game inputs
+  const addGameInputName = React.useRef('');
+  const addGameInputPrice = React.useRef('');
+  const addGameInputCategory = React.useRef('');
+  const addGameInputAvailable = React.useRef(false);
+
+  // Handle add game button click
+  const handleClickAddGame = () => {
+    // Add new game to games list
+    setGames([...games, {
+      objectID: uuidv4(),
+      name: addGameInputName.current.value,
+      price: addGameInputPrice.current.value,
+      category: addGameInputCategory.current.value,
+      available: addGameInputAvailable.current.checked
+    }]);
+    // Clear add game inputs
+    addGameInputName.current.value = '';
+    addGameInputPrice.current.value = '';
+    addGameInputCategory.current.value = '';
+    addGameInputAvailable.current.checked = false;
+  };
+
 
   // Get search terms from local storage, if not found set default values
   const searchTermsStorage = JSON.parse(localStorage.getItem('searchTermsObject')) || { name: '', category: '', price: '' };
@@ -81,6 +106,10 @@ const App = () => {
       <Search onSearch={handleSearch} inputSearchValues={searchTerms}>Search:</Search>
 
       <TableGames searchName={searchTerms.name} searchCategory={searchTerms.category} searchPrice={searchTerms.price} games={games} onRemoveItem={handleRemoveItem} />
+
+      <AddGame
+        handleClick={handleClickAddGame} inputRefName={addGameInputName} inputRefPrice={addGameInputPrice} inputRefCategory={addGameInputCategory} inputRefAvailable={addGameInputAvailable} />
+
     </div>
   );
 };
@@ -131,17 +160,17 @@ const List = ({ gamesList, onRemoveItem }) => {
 
 // List item component
 const ListItem = ({ item, onRemoveItem }) => (
-    <tr>
-      <td>{item.name}</td>
-      <td>{item.price}</td>
-      <td>{item.category}</td>
-      <td>{item.available ? 'Yes' : 'No'}</td>
-      <td><button onClick={() => onRemoveItem(item)}>Remove</button></td>
-    </tr>
+  <tr>
+    <td>{item.name}</td>
+    <td>{item.price}</td>
+    <td>{item.category}</td>
+    <td>{item.available ? 'Yes' : 'No'}</td>
+    <td><button onClick={() => onRemoveItem(item)}>Remove</button></td>
+  </tr>
 );
 
 // Input component
-const InputWithLabel = ({ id, type = "text", onChange, value, isFocused, children }) => {
+const InputWithLabel = ({ id, type = "text", onChange, value, isFocused, isRequired, children }) => {
   const inputRef = React.useRef();
 
   React.useEffect(() => {
@@ -152,10 +181,19 @@ const InputWithLabel = ({ id, type = "text", onChange, value, isFocused, childre
 
   return (
     <>
-      <label htmlFor={id}>{children} </label><input ref={inputRef} id={id} type={type} onChange={onChange} value={value} autoFocus={isFocused} />
+      <label htmlFor={id}>{children} </label><input ref={inputRef} id={id} type={type} onChange={onChange} value={value} autoFocus={isFocused} required={isRequired} />
     </>
   );
 };
+
+const InputWithLabelForm = ({ id, type = "text", onChange, inputRef, value, isRequired, children }) => {
+  return (
+    <>
+      <label htmlFor={id}>{children} </label><input ref={inputRef} id={id} type={type} onChange={onChange} value={value} required={isRequired} />
+    </>
+  );
+};
+
 
 // Search component
 const Search = ({ onSearch, inputSearchValues, children }) => (
@@ -173,6 +211,23 @@ const Search = ({ onSearch, inputSearchValues, children }) => (
         {inputSearchValues.price !== '' ? <li>price: {inputSearchValues.price}</li> : ''}
       </ul>
     </div>
+  </>
+);
+
+const AddGame = ({ handleClick, inputRefName, inputRefPrice, inputRefCategory, inputRefAvailable }) => (
+  <>
+    <h2>Add game</h2>
+    <form className="add-game-form">
+      <div>
+        <InputWithLabelForm id="add-a-game-name" inputRef={inputRefName} isRequired>Name</InputWithLabelForm>
+        <InputWithLabelForm id="add-a-game-price" type="number" inputRef={inputRefPrice} isRequired>Price</InputWithLabelForm>
+        <InputWithLabelForm id="add-a-game-category" inputRef={inputRefCategory} isRequired>Category</InputWithLabelForm>
+        <InputWithLabelForm id="add-a-game-available" type="checkbox" inputRef={inputRefAvailable}>Available</InputWithLabelForm>
+      </div>
+      <button type="button" onClick={handleClick}>
+        Submit form
+      </button>
+    </form>
   </>
 );
 
@@ -199,12 +254,29 @@ InputWithLabel.propTypes = {
   value: PropTypes.string,
   children: PropTypes.node,
   isFocused: PropTypes.bool,
+  isRequired: PropTypes.bool,
+};
+InputWithLabelForm.propTypes = {
+  id: PropTypes.string,
+  type: PropTypes.string,
+  onChange: PropTypes.func,
+  inputRef: PropTypes.object,
+  value: PropTypes.string,
+  children: PropTypes.node,
+  isRequired: PropTypes.bool,
 };
 Search.propTypes = {
   onSearch: PropTypes.func,
   inputValue: PropTypes.string,
   inputSearchValues: PropTypes.object,
   children: PropTypes.node,
+};
+AddGame.propTypes = {
+  handleClick: PropTypes.func,
+  inputRefName: PropTypes.object,
+  inputRefPrice: PropTypes.object,
+  inputRefCategory: PropTypes.object,
+  inputRefAvailable: PropTypes.object,
 };
 
 export default App;
