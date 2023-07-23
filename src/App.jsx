@@ -14,13 +14,19 @@ const useObjectStorageState = (key, initialState) => {
   return [valuesObject, setvaluesObject];
 };
 
-// Reducer for games list: SET_GAMES, REMOVE_GAME
+// Reducer for games list
 const gamesReducer = (state, action) => {
   switch (action.type) {
-    case 'SET_GAMES':
-      return action.payload;
+    case 'GAMES_FETCH_INIT':
+      return { ...state, isLoading: true, isError: false };
+    case 'GAMES_FETCH_SUCCESS':
+      return { ...state, data: action.payload, isLoading: false, isError: false };
+    case 'GAMES_FETCH_FAILURE':
+      return { ...state, isLoading: false, isError: true };
     case 'REMOVE_GAME':
-      return state.filter((game) => action.payload.objectID !== game.objectID);
+      return { ...state, data: state.data.filter((game) => game.objectID !== action.payload.objectID) };
+    case 'SET_GAMES':
+      return { ...state, data: action.payload };
     default:
       throw new Error();
   }
@@ -70,23 +76,20 @@ const App = () => {
     );
 
   // Define state for games list, set initial state to empty array. Games list will be fetched from API.
-  const [games, dispatchGames] = React.useReducer(gamesReducer, []);
-
-  // Set initial state to loading
-  const [isLoading, setIsLoading] = React.useState(false);
-
-  // Set initial state to error
-  const [isError, setIsError] = React.useState(false);
+  const [games, dispatchGames] = React.useReducer(
+    gamesReducer,
+    { data: [], isLoading: false, isError: false }
+  );
 
   // Load games list from API on component mount
   React.useEffect(() => {
-    setIsLoading(true);
+    // setIsLoading(true);
+    dispatchGames({ type: 'GAMES_FETCH_INIT' });
 
     getAsyncGames().then(result => {
-      dispatchGames({ type: 'SET_GAMES', payload: result.data.games });
-      setIsLoading(false);
+      dispatchGames({ type: 'GAMES_FETCH_SUCCESS', payload: result.data.games });
     })
-      .catch(() => setIsError(true));
+      .catch(() => dispatchGames({ type: 'GAMES_FETCH_FAILURE' }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -103,14 +106,20 @@ const App = () => {
 
   // Handle add game button click
   const handleClickAddGame = () => {
+    // Prevent empty inputs
+    if (addGameInputName.current.value === '' || addGameInputPrice.current.value === '' || addGameInputCategory.current.value === '') {
+      return;
+    }
     // Add new game to games list
-    dispatchGames({ type: 'SET_GAMES', payload: [...games, {
-      objectID: uuidv4(),
-      name: addGameInputName.current.value,
-      price: addGameInputPrice.current.value,
-      category: addGameInputCategory.current.value,
-      available: addGameInputAvailable.current.checked
-    }]});
+    dispatchGames({
+      type: 'SET_GAMES', payload: [...games.data, {
+        objectID: uuidv4(),
+        name: addGameInputName.current.value,
+        price: addGameInputPrice.current.value,
+        category: addGameInputCategory.current.value,
+        available: addGameInputAvailable.current.checked
+      }]
+    });
     // Clear add game inputs
     addGameInputName.current.value = '';
     addGameInputPrice.current.value = '';
@@ -142,7 +151,7 @@ const App = () => {
 
       <Search onSearch={handleSearch} inputSearchValues={searchTerms}>Search:</Search>
 
-      <TableGames searchName={searchTerms.name} searchCategory={searchTerms.category} searchPrice={searchTerms.price} games={games} onRemoveItem={handleRemoveItem} isLoading={isLoading} isError={isError} />
+      <TableGames searchName={searchTerms.name} searchCategory={searchTerms.category} searchPrice={searchTerms.price} games={games} onRemoveItem={handleRemoveItem} />
 
       <AddGame
         handleClick={handleClickAddGame} inputRefName={addGameInputName} inputRefPrice={addGameInputPrice} inputRefCategory={addGameInputCategory} inputRefAvailable={addGameInputAvailable} />
@@ -152,7 +161,7 @@ const App = () => {
 };
 
 // Table component
-const TableGames = ({ searchName, searchCategory, searchPrice, games, onRemoveItem, isLoading, isError }) => {
+const TableGames = ({ searchName, searchCategory, searchPrice, games, onRemoveItem }) => {
 
   return (
     <div>
@@ -167,18 +176,18 @@ const TableGames = ({ searchName, searchCategory, searchPrice, games, onRemoveIt
             <th></th>
           </tr>
         </thead>
-        <List gamesList={games.filter((el) => {
+        <List gamesList={games.data.filter((game) => {
           if (searchName === '' && searchCategory === '' && searchPrice === '') {
-            return el;
-          } else if (searchName !== '' && el.name.toLowerCase().includes(searchName.toLowerCase())) {
-            return el;
-          } else if (searchCategory !== '' && el.category.toLowerCase().includes(searchCategory.toLowerCase())) {
-            return el;
-          } else if (searchPrice !== '' && el.price <= searchPrice) {
-            return el;
+            return game;
+          } else if (searchName !== '' && game.name.toLowerCase().includes(searchName.toLowerCase())) {
+            return game;
+          } else if (searchCategory !== '' && game.category.toLowerCase().includes(searchCategory.toLowerCase())) {
+            return game;
+          } else if (searchPrice !== '' && game.price <= searchPrice) {
+            return game;
           }
           return null;
-        })} onRemoveItem={onRemoveItem} isLoading={isLoading} isError={isError} />
+        })} onRemoveItem={onRemoveItem} isLoading={games.isLoading} isError={games.isError} />
       </table>
     </div>
   );
@@ -188,12 +197,12 @@ const TableGames = ({ searchName, searchCategory, searchPrice, games, onRemoveIt
 const List = ({ gamesList, onRemoveItem, isLoading, isError }) => {
   return isError ? (<tbody><tr><td colSpan="4">Something went wrong...</td></tr></tbody>) :
     isLoading ? (<tbody><tr><td colSpan="4">Loading...</td></tr></tbody>) : (
-    <tbody>
-      {gamesList.map((item) => {
-        return (<ListItem key={item.objectID} item={item} onRemoveItem={onRemoveItem} />);
-      })}
-    </tbody>
-  );
+      <tbody>
+        {gamesList.map((item) => {
+          return (<ListItem key={item.objectID} item={item} onRemoveItem={onRemoveItem} />);
+        })}
+      </tbody>
+    );
 };
 
 // List item component
@@ -274,10 +283,8 @@ TableGames.propTypes = {
   searchName: PropTypes.string,
   searchCategory: PropTypes.string,
   searchPrice: PropTypes.string,
-  games: PropTypes.arrayOf(PropTypes.object),
+  games: PropTypes.object,
   onRemoveItem: PropTypes.func,
-  isLoading: PropTypes.bool,
-  isError: PropTypes.bool,
 };
 List.propTypes = {
   gamesList: PropTypes.arrayOf(PropTypes.object),
