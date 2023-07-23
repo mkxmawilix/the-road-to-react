@@ -14,7 +14,21 @@ const useObjectStorageState = (key, initialState) => {
   return [valuesObject, setvaluesObject];
 };
 
+// Reducer for games list: SET_GAMES, REMOVE_GAME
+const gamesReducer = (state, action) => {
+  switch (action.type) {
+    case 'SET_GAMES':
+      return action.payload;
+    case 'REMOVE_GAME':
+      return state.filter((game) => action.payload.objectID !== game.objectID);
+    default:
+      throw new Error();
+  }
+};
 
+
+
+// Main component
 const App = () => {
 
   // Initialize default games list
@@ -56,7 +70,7 @@ const App = () => {
     );
 
   // Define state for games list, set initial state to empty array. Games list will be fetched from API.
-  const [games, setGames] = React.useState([]);
+  const [games, dispatchGames] = React.useReducer(gamesReducer, []);
 
   // Set initial state to loading
   const [isLoading, setIsLoading] = React.useState(false);
@@ -64,11 +78,12 @@ const App = () => {
   // Set initial state to error
   const [isError, setIsError] = React.useState(false);
 
+  // Load games list from API on component mount
   React.useEffect(() => {
     setIsLoading(true);
 
     getAsyncGames().then(result => {
-      setGames(result.data.games);
+      dispatchGames({ type: 'SET_GAMES', payload: result.data.games });
       setIsLoading(false);
     })
       .catch(() => setIsError(true));
@@ -77,8 +92,7 @@ const App = () => {
 
   // Removes item from games list, set new games list (should be called on remove button click)
   const handleRemoveItem = (item) => {
-    const newGames = games.filter((game) => item.objectID !== game.objectID);
-    setGames(newGames);
+    dispatchGames({ type: 'REMOVE_GAME', payload: item });
   };
 
   // Define refs for add game inputs
@@ -90,13 +104,13 @@ const App = () => {
   // Handle add game button click
   const handleClickAddGame = () => {
     // Add new game to games list
-    setGames([...games, {
+    dispatchGames({ type: 'SET_GAMES', payload: [...games, {
       objectID: uuidv4(),
       name: addGameInputName.current.value,
       price: addGameInputPrice.current.value,
       category: addGameInputCategory.current.value,
       available: addGameInputAvailable.current.checked
-    }]);
+    }]});
     // Clear add game inputs
     addGameInputName.current.value = '';
     addGameInputPrice.current.value = '';
