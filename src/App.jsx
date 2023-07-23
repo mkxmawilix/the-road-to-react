@@ -49,8 +49,31 @@ const App = () => {
     }
   ];
 
-  // Defines state for games, set initial state to default games
-  const [games, setGames] = React.useState(initialGames);
+  // Fake async API call to get games list
+  const getAsyncGames = () =>
+    new Promise((resolve) =>
+      setTimeout(() => resolve({ data: { games: initialGames } }), 2000)
+    );
+
+  // Define state for games list, set initial state to empty array. Games list will be fetched from API.
+  const [games, setGames] = React.useState([]);
+
+  // Set initial state to loading
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  // Set initial state to error
+  const [isError, setIsError] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsLoading(true);
+
+    getAsyncGames().then(result => {
+      setGames(result.data.games);
+      setIsLoading(false);
+    })
+      .catch(() => setIsError(true));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Removes item from games list, set new games list (should be called on remove button click)
   const handleRemoveItem = (item) => {
@@ -105,7 +128,7 @@ const App = () => {
 
       <Search onSearch={handleSearch} inputSearchValues={searchTerms}>Search:</Search>
 
-      <TableGames searchName={searchTerms.name} searchCategory={searchTerms.category} searchPrice={searchTerms.price} games={games} onRemoveItem={handleRemoveItem} />
+      <TableGames searchName={searchTerms.name} searchCategory={searchTerms.category} searchPrice={searchTerms.price} games={games} onRemoveItem={handleRemoveItem} isLoading={isLoading} isError={isError} />
 
       <AddGame
         handleClick={handleClickAddGame} inputRefName={addGameInputName} inputRefPrice={addGameInputPrice} inputRefCategory={addGameInputCategory} inputRefAvailable={addGameInputAvailable} />
@@ -115,7 +138,7 @@ const App = () => {
 };
 
 // Table component
-const TableGames = ({ searchName, searchCategory, searchPrice, games, onRemoveItem }) => {
+const TableGames = ({ searchName, searchCategory, searchPrice, games, onRemoveItem, isLoading, isError }) => {
 
   return (
     <div>
@@ -141,15 +164,16 @@ const TableGames = ({ searchName, searchCategory, searchPrice, games, onRemoveIt
             return el;
           }
           return null;
-        })} onRemoveItem={onRemoveItem} />
+        })} onRemoveItem={onRemoveItem} isLoading={isLoading} isError={isError} />
       </table>
     </div>
   );
 };
 
 // List component
-const List = ({ gamesList, onRemoveItem }) => {
-  return (
+const List = ({ gamesList, onRemoveItem, isLoading, isError }) => {
+  return isError ? (<tbody><tr><td colSpan="4">Something went wrong...</td></tr></tbody>) :
+    isLoading ? (<tbody><tr><td colSpan="4">Loading...</td></tr></tbody>) : (
     <tbody>
       {gamesList.map((item) => {
         return (<ListItem key={item.objectID} item={item} onRemoveItem={onRemoveItem} />);
@@ -238,10 +262,14 @@ TableGames.propTypes = {
   searchPrice: PropTypes.string,
   games: PropTypes.arrayOf(PropTypes.object),
   onRemoveItem: PropTypes.func,
+  isLoading: PropTypes.bool,
+  isError: PropTypes.bool,
 };
 List.propTypes = {
   gamesList: PropTypes.arrayOf(PropTypes.object),
   onRemoveItem: PropTypes.func,
+  isLoading: PropTypes.bool,
+  isError: PropTypes.bool,
 };
 ListItem.propTypes = {
   item: PropTypes.object,
