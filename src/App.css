@@ -1,4 +1,4 @@
-.game-list-table {
+.list-table {
     width: 40%;
     border-collapse: collapse;
     border-spacing: 0;
@@ -7,17 +7,22 @@
     margin-bottom: 20px;
 }
 
-.game-list-table th, .game-list-table td {
+.list-table th, .list-table td {
     text-align: left;
     padding: 16px;
 }
 
-.game-list-table tr:nth-child(even) {
+.list-table tr:nth-child(even) {
     background-color: #f2f2f2;
 }
 
-.game-list-table th {
+.list-table.game th {
     background-color: #4CAF50;
+    color: white;
+}
+
+.list-table.story th {
+    background-color: #f09104;
     color: white;
 }
 
