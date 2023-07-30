@@ -2,47 +2,30 @@ import React from 'react';
 import PropTypes from "prop-types";
 import '../App.css'
 
-
-const initialStories = [
-    {
-        title: 'React',
-        url: 'https://reactjs.org/',
-        author: 'Jordan Walke',
-        num_comments: 3,
-        points: 4,
-        objectID: 0,
-    },
-    {
-        title: 'Redux',
-        url: 'https://redux.js.org/',
-        author: 'Dan Abramov, Andrew Clark',
-        num_comments: 2,
-        points: 5,
-        objectID: 1,
-    },
-];
-
-const getAsyncStories = () =>
-    new Promise((resolve) =>
-        setTimeout(
-            () => resolve({ data: { stories: initialStories } }),
-            2000
-        )
-    );
+const ENDPOINT_API = 'https://hn.algolia.com/api/v1/search?query='
 
 const storiesReducer = (state, action) => {
     switch (action.type) {
+        case 'STORIES_NO_SEARCH':
+            return {
+                ...state,
+                isLoading: false,
+                isError: false,
+                isNoSearch: true,
+            };
         case 'STORIES_FETCH_INIT':
             return {
                 ...state,
                 isLoading: true,
                 isError: false,
+                isNoSearch: false,
             };
         case 'STORIES_FETCH_SUCCESS':
             return {
                 ...state,
                 isLoading: false,
                 isError: false,
+                isNoSearch: false,
                 data: action.payload,
             };
         case 'STORIES_FETCH_FAILURE':
@@ -50,6 +33,7 @@ const storiesReducer = (state, action) => {
                 ...state,
                 isLoading: false,
                 isError: true,
+                isNoSearch: false,
             };
         case 'REMOVE_STORY':
             return {
@@ -83,23 +67,29 @@ const HackerNews = () => {
 
     const [stories, dispatchStories] = React.useReducer(
         storiesReducer,
-        { data: [], isLoading: false, isError: false }
+        { data: [], isLoading: false, isError: false, isNoSearch: false }
     );
 
     React.useEffect(() => {
+        if (searchTerm === '') {
+            dispatchStories({ type: 'STORIES_NO_SEARCH' });
+            return;
+        }
+
         dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
-        getAsyncStories()
+        fetch(`${ENDPOINT_API}${searchTerm}`)
+            .then((response) => response.json())
             .then((result) => {
                 dispatchStories({
                     type: 'STORIES_FETCH_SUCCESS',
-                    payload: result.data.stories,
+                    payload: result.hits,
                 });
             })
             .catch(() =>
                 dispatchStories({ type: 'STORIES_FETCH_FAILURE' })
             );
-    }, []);
+    }, [searchTerm]);
 
     const handleRemoveStory = (item) => {
         dispatchStories({
@@ -111,10 +101,6 @@ const HackerNews = () => {
     const handleSearch = (event) => {
         setSearchTerm(event.target.value);
     };
-
-    const searchedStories = stories.data.filter((story) =>
-        story.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
     return (
         <div>
@@ -131,8 +117,7 @@ const HackerNews = () => {
 
             <hr />
 
-
-            <TableStories list={searchedStories} onRemoveItem={handleRemoveStory} />
+            <TableStories list={stories} onRemoveItem={handleRemoveStory} />
 
         </div>
     );
@@ -148,7 +133,7 @@ const TableStories = ({ list, onRemoveItem }) => {
             <table className="list-table story">
                 <thead>
                     <tr>
-                        <th>Title</th>
+                        <th className="title">Title</th>
                         <th>URL</th>
                         <th>Author</th>
                         <th>Nbr comments</th>
@@ -156,7 +141,7 @@ const TableStories = ({ list, onRemoveItem }) => {
                         <th></th>
                     </tr>
                 </thead>
-                <List list={list} onRemoveItem={onRemoveItem} isLoading={list.isLoading} isError={list.isError} />
+                <List list={list.data} onRemoveItem={onRemoveItem} isLoading={list.isLoading} isError={list.isError} isNoSearch={list.isNoSearch}/>
             </table>
         </div>
     );
@@ -194,8 +179,9 @@ const InputWithLabel = ({
     );
 };
 
-const List = ({ list, onRemoveItem, isLoading, isError }) => {
-    return isError ? (<tbody><tr><td colSpan="4">Something went wrong...</td></tr></tbody>) :
+const List = ({ list, onRemoveItem, isLoading, isError, isNoSearch }) => {
+    return isNoSearch ? (<tbody><tr><td colSpan="4">Please search something...</td></tr></tbody>) :
+        isError ? (<tbody><tr><td colSpan="4">Something went wrong...</td></tr></tbody>) :
         isLoading ? (<tbody><tr><td colSpan="4">Loading...</td></tr></tbody>) : (
             <tbody>
                 {list.map((item) => {
@@ -226,7 +212,7 @@ InputWithLabel.propTypes = {
 };
 
 TableStories.propTypes = {
-    list: PropTypes.arrayOf(PropTypes.object),
+    list: PropTypes.object,
     onRemoveItem: PropTypes.func,
 };
 
@@ -235,6 +221,7 @@ List.propTypes = {
     onRemoveItem: PropTypes.func,
     isLoading: PropTypes.bool,
     isError: PropTypes.bool,
+    isNoSearch: PropTypes.bool,
 };
 
 ListItem.propTypes = {
