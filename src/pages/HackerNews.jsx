@@ -62,7 +62,11 @@ const useStorageState = (key, initialState) => {
 const HackerNews = () => {
     const [searchTerm, setSearchTerm] = useStorageState(
         'search',
-        ''
+        'React'
+    );
+
+    const [url, setUrl] = React.useState(
+        `${ENDPOINT_API}${searchTerm}`
     );
 
     const [stories, dispatchStories] = React.useReducer(
@@ -71,14 +75,10 @@ const HackerNews = () => {
     );
 
     const handleFetchStories = React.useCallback(() => {
-        if (!searchTerm) {
-            dispatchStories({ type: 'STORIES_NO_SEARCH' });
-            return;
-        }
 
         dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
-        fetch(`${ENDPOINT_API}${searchTerm}`)
+        fetch(url)
             .then((response) => response.json())
             .then((result) => {
                 dispatchStories({
@@ -89,7 +89,7 @@ const HackerNews = () => {
             .catch(() =>
                 dispatchStories({ type: 'STORIES_FETCH_FAILURE' })
             );
-    }, [searchTerm]);
+    }, [url]);
 
     React.useEffect(() => {
         handleFetchStories();
@@ -102,9 +102,13 @@ const HackerNews = () => {
         });
     };
 
-    const handleSearch = (event) => {
+    const handleSearchInput = (event) => {
         setSearchTerm(event.target.value);
     };
+
+    const handleSearchSubmit = () => {
+        setUrl(`${ENDPOINT_API}${searchTerm}`);
+    }
 
     return (
         <div>
@@ -114,11 +118,12 @@ const HackerNews = () => {
                 id="search"
                 value={searchTerm}
                 isFocused
-                onInputChange={handleSearch}
+                onInputChange={handleSearchInput}
             >
                 <strong>Search:</strong>
             </InputWithLabel>
 
+            <button type="button" disabled={!searchTerm} onClick={handleSearchSubmit} > Search </button>
             <hr />
 
             <TableStories list={stories} onRemoveItem={handleRemoveStory} />
