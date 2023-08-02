@@ -70,8 +70,8 @@ const HackerNews = () => {
         { data: [], isLoading: false, isError: false, isNoSearch: false }
     );
 
-    React.useEffect(() => {
-        if (searchTerm === '') {
+    const handleFetchStories = React.useCallback(() => {
+        if (!searchTerm) {
             dispatchStories({ type: 'STORIES_NO_SEARCH' });
             return;
         }
@@ -90,6 +90,10 @@ const HackerNews = () => {
                 dispatchStories({ type: 'STORIES_FETCH_FAILURE' })
             );
     }, [searchTerm]);
+
+    React.useEffect(() => {
+        handleFetchStories();
+    }, [handleFetchStories]);
 
     const handleRemoveStory = (item) => {
         dispatchStories({
