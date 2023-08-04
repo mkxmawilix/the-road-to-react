@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import PropTypes from "prop-types";
 import '../App.css'
 
@@ -78,12 +79,12 @@ const HackerNews = () => {
 
         dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
-        fetch(url)
-            .then((response) => response.json())
+        axios
+        .get(url)
             .then((result) => {
                 dispatchStories({
                     type: 'STORIES_FETCH_SUCCESS',
-                    payload: result.hits,
+                    payload: result.data.hits,
                 });
             })
             .catch(() =>
