@@ -2,6 +2,19 @@ import '../App.css';
 import React from 'react';
 import PropTypes from "prop-types";
 import { v4 as uuidv4 } from 'uuid';
+import {
+    Table,
+    Header,
+    HeaderRow,
+    HeaderCell,
+    Body,
+    Row,
+    Cell,
+} from '@table-library/react-table-library/table';
+import {
+    useSort,
+    HeaderCellSort
+} from '@table-library/react-table-library/sort';
 
 
 const useObjectStorageState = (key, initialState) => {
@@ -151,7 +164,10 @@ const Games = () => {
 
             <Search onSearch={handleSearch} inputSearchValues={searchTerms}>Search:</Search>
 
-            <TableGames searchName={searchTerms.name} searchCategory={searchTerms.category} searchPrice={searchTerms.price} games={games} onRemoveItem={handleRemoveItem} />
+            <TableGames searchName={searchTerms.name}
+                searchCategory={searchTerms.category}
+                searchPrice={searchTerms.price}
+                games={games} onRemoveItem={handleRemoveItem} />
 
             <AddGame
                 handleClick={handleClickAddGame} inputRefName={addGameInputName} inputRefPrice={addGameInputPrice} inputRefCategory={addGameInputCategory} inputRefAvailable={addGameInputAvailable} />
@@ -162,59 +178,84 @@ const Games = () => {
 
 // Table component
 const TableGames = ({ searchName, searchCategory, searchPrice, games, onRemoveItem }) => {
+    const filteredGames = games.data.filter((game) => {
+        if (searchName === '' && searchCategory === '' && searchPrice === '') {
+            return game;
+        } else if (searchName !== '' && game.name.toLowerCase().includes(searchName.toLowerCase())) {
+            return game;
+        } else if (searchCategory !== '' && game.category.toLowerCase().includes(searchCategory.toLowerCase())) {
+            return game;
+        } else if (searchPrice !== '' && game.price <= searchPrice) {
+            return game;
+        }
+        return null;
+    });
+    const tableData = { nodes: filteredGames };
+    const sort = useSort(
+        tableData, {
+        onChange: null,
+        state: {
+            sortKey: 'NAME',
+            reverse: false,
+        },
+    }, {
+        sortFns: {
+            NAME: (array) =>
+                array.sort((a, b) => a.name.localeCompare(b.name)),
+            PRICE: (array) =>
+                array.sort((a, b) => a.price - b.price),
+            CATEGORY: (array) =>
+                array.sort((a, b) => a.category.localeCompare(b.category)),
+            AVAILABLE: (array) =>
+                array.sort((a, b) => a.available - b.available),
+        },
+    });
 
     return (
         <div>
             <h2>Games list</h2>
-            <table className="list-table game">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Price</th>
-                        <th>Category</th>
-                        <th>Available</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <List gamesList={games.data.filter((game) => {
-                    if (searchName === '' && searchCategory === '' && searchPrice === '') {
-                        return game;
-                    } else if (searchName !== '' && game.name.toLowerCase().includes(searchName.toLowerCase())) {
-                        return game;
-                    } else if (searchCategory !== '' && game.category.toLowerCase().includes(searchCategory.toLowerCase())) {
-                        return game;
-                    } else if (searchPrice !== '' && game.price <= searchPrice) {
-                        return game;
-                    }
-                    return null;
-                })} onRemoveItem={onRemoveItem} isLoading={games.isLoading} isError={games.isError} />
-            </table>
+
+            <Table data={tableData} sort={sort} className="list-table game">
+                {(tableList) => (
+                    <React.Fragment>
+                        <Header>
+                            <HeaderRow>
+                                <HeaderCellSort sortKey="NAME">Name</HeaderCellSort>
+                                <HeaderCellSort sortKey="PRICE">Price</HeaderCellSort>
+                                <HeaderCellSort sortKey="CATEGORY">Category</HeaderCellSort>
+                                <HeaderCellSort sortKey="AVAILABLE">Available</HeaderCellSort>
+                                <HeaderCell></HeaderCell>
+                            </HeaderRow>
+                        </Header>
+                        <Body>
+                            {games.isLoading ? (
+                                <Row>
+                                    <Cell colSpan="4">Loading...</Cell>
+                                </Row>
+                            ) : games.isError ? (
+                                <Row>
+                                    <Cell colSpan="4">Something went wrong...</Cell>
+                                </Row>
+                            ) : (
+                                tableList.map((item) => (
+                                    <Row key={item.objectID}>
+                                        <Cell>{item.name}</Cell>
+                                        <Cell>{item.price}</Cell>
+                                        <Cell>{item.category}</Cell>
+                                        <Cell>{item.available ? 'Yes' : 'No'}</Cell>
+                                        <Cell>
+                                            <button onClick={() => onRemoveItem(item)}>Remove</button>
+                                        </Cell>
+                                    </Row>
+                                ))
+                            )}
+                        </Body>
+                    </React.Fragment>
+                )}
+            </Table>
         </div>
     );
 };
-
-// List component
-const List = ({ gamesList, onRemoveItem, isLoading, isError }) => {
-    return isError ? (<tbody><tr><td colSpan="4">Something went wrong...</td></tr></tbody>) :
-        isLoading ? (<tbody><tr><td colSpan="4">Loading...</td></tr></tbody>) : (
-            <tbody>
-                {gamesList.map((item) => {
-                    return (<ListItem key={item.objectID} item={item} onRemoveItem={onRemoveItem} />);
-                })}
-            </tbody>
-        );
-};
-
-// List item component
-const ListItem = ({ item, onRemoveItem }) => (
-    <tr>
-        <td>{item.name}</td>
-        <td>{item.price}</td>
-        <td>{item.category}</td>
-        <td>{item.available ? 'Yes' : 'No'}</td>
-        <td><button onClick={() => onRemoveItem(item)}>Remove</button></td>
-    </tr>
-);
 
 // Input component
 const InputWithLabel = ({ id, type = "text", onChange, value, isFocused, isRequired, children }) => {
@@ -284,16 +325,6 @@ TableGames.propTypes = {
     searchCategory: PropTypes.string,
     searchPrice: PropTypes.string,
     games: PropTypes.object,
-    onRemoveItem: PropTypes.func,
-};
-List.propTypes = {
-    gamesList: PropTypes.arrayOf(PropTypes.object),
-    onRemoveItem: PropTypes.func,
-    isLoading: PropTypes.bool,
-    isError: PropTypes.bool,
-};
-ListItem.propTypes = {
-    item: PropTypes.object,
     onRemoveItem: PropTypes.func,
 };
 InputWithLabel.propTypes = {

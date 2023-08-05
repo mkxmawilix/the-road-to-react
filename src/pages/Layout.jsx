@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 const Layout = () => {
     return (
         <>
+            <h1>Menu</h1>
             <nav>
                 <ul>
                     <li>
