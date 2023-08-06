@@ -1,4 +1,6 @@
 import '../App.css';
+import { CurrencyProvider, useCurrency } from '../context/currency';
+import CurrencyButtons from '../components/CurrencyButtons';
 import React from 'react';
 import PropTypes from "prop-types";
 import { v4 as uuidv4 } from 'uuid';
@@ -164,10 +166,17 @@ const Games = () => {
 
             <Search onSearch={handleSearch} inputSearchValues={searchTerms}>Search:</Search>
 
-            <TableGames searchName={searchTerms.name}
-                searchCategory={searchTerms.category}
-                searchPrice={searchTerms.price}
-                games={games} onRemoveItem={handleRemoveItem} />
+            <CurrencyProvider>
+                Display prices in :
+                <div className="currency-button">
+                    <CurrencyButtons />
+                </div>
+
+                <TableGames searchName={searchTerms.name}
+                    searchCategory={searchTerms.category}
+                    searchPrice={searchTerms.price}
+                    games={games} onRemoveItem={handleRemoveItem} />
+            </CurrencyProvider>
 
             <AddGame
                 handleClick={handleClickAddGame} inputRefName={addGameInputName} inputRefPrice={addGameInputPrice} inputRefCategory={addGameInputCategory} inputRefAvailable={addGameInputAvailable} />
@@ -211,6 +220,7 @@ const TableGames = ({ searchName, searchCategory, searchPrice, games, onRemoveIt
         },
     });
 
+    const { value } = useCurrency();
     return (
         <div>
             <h2>Games list</h2>
@@ -237,17 +247,22 @@ const TableGames = ({ searchName, searchCategory, searchPrice, games, onRemoveIt
                                     <Cell colSpan="4">Something went wrong...</Cell>
                                 </Row>
                             ) : (
-                                tableList.map((item) => (
-                                    <Row key={item.objectID}>
-                                        <Cell>{item.name}</Cell>
-                                        <Cell>{item.price}</Cell>
-                                        <Cell>{item.category}</Cell>
-                                        <Cell>{item.available ? 'Yes' : 'No'}</Cell>
-                                        <Cell>
-                                            <button onClick={() => onRemoveItem(item)}>Remove</button>
-                                        </Cell>
-                                    </Row>
-                                ))
+                                tableList.map((item) => {
+                                    const price = new Intl.NumberFormat('en-US', {
+                                        style: 'currency',
+                                        currency: value.code,
+                                    }).format(item.price * value.conversionRate);
+                                    return (
+                                        <Row key={item.objectID}>
+                                            <Cell>{item.name}</Cell>
+                                            <Cell>{price}</Cell>
+                                            <Cell>{item.category}</Cell>
+                                            <Cell>{item.available ? 'Yes' : 'No'}</Cell>
+                                            <Cell>
+                                                <button onClick={() => onRemoveItem(item)}>Remove</button>
+                                            </Cell>
+                                        </Row>)
+                                })
                             )}
                         </Body>
                     </React.Fragment>

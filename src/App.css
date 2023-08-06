@@ -1,5 +1,5 @@
 .list-table {
-    width: 40%;
+    width: 90%;
     border-collapse: collapse;
     border-spacing: 0;
     border: 1px solid #ddd;
@@ -7,17 +7,14 @@
     margin-bottom: 20px;
 }
 
-.list-table th, .list-table td {
+.list-table th,
+.list-table td {
     text-align: left;
     padding: 16px;
 }
 
 .list-table tr:nth-child(even) {
     background-color: #f2f2f2;
-}
-
-.list-table.story {
-    width: 80%;
 }
 
 .list-table.game th {
@@ -37,7 +34,7 @@
     margin-bottom: 20px;
 }
 
-.search-attribute-container > div {
+.search-attribute-container>div {
     margin-right: 20px;
 }
 
@@ -47,7 +44,9 @@
     text-decoration: underline;
 }
 
-.add-game-form input[type=text], input[type=number], input[type=checkbox] {
+.add-game-form input[type=text],
+input[type=number],
+input[type=checkbox] {
     width: 10%;
     padding: 12px 20px;
     margin: 8px 0;
@@ -55,16 +54,18 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
-  }
+}
 
-.add-game-form > div {
+.add-game-form>div {
     display: flex;
     flex-direction: row;
     align-items: center;
     margin-bottom: 20px;
 }
 
-.add-game-form > div > input[type=text], input[type=number], input[type=checkbox] {
+.add-game-form>div>input[type=text],
+input[type=number],
+input[type=checkbox] {
     margin-right: 20px;
 }
 
@@ -77,4 +78,14 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-  }
+}
+
+.currency-button {
+    display: inline-block;
+}
+
+.currency-button button {
+    padding: 10px;
+    cursor: pointer;
+    margin: 5px;
+}
