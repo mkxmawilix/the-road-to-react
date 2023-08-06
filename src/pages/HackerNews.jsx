@@ -118,8 +118,9 @@ const HackerNews = () => {
         setSearchTerm(event.target.value);
     };
 
-    const handleSearchSubmit = () => {
+    const handleSearchSubmit = (event) => {
         setUrl(`${ENDPOINT_API}${searchTerm}`);
+        event.preventDefault();
     }
 
     const tableData = { nodes: stories.data };
@@ -149,16 +150,7 @@ const HackerNews = () => {
         <div>
             <h1>My Hacker Stories</h1>
 
-            <InputWithLabel
-                id="search"
-                value={searchTerm}
-                isFocused
-                onInputChange={handleSearchInput}
-            >
-                <strong>Search:</strong>
-            </InputWithLabel>
-
-            <button type="button" disabled={!searchTerm} onClick={handleSearchSubmit} > Search </button>
+            <SearchForm searchTerm={searchTerm} onSearchInput={handleSearchInput} onSearchSubmit={handleSearchSubmit}/>
             <hr />
 
             <Table data={tableData} sort={sort} className="list-table story">
@@ -204,6 +196,25 @@ const HackerNews = () => {
 };
 
 
+const SearchForm = ({
+    searchTerm,
+    onSearchInput,
+    onSearchSubmit,
+}) => (
+    <form onSubmit={onSearchSubmit}>
+        <InputWithLabel
+            id="search"
+            value={searchTerm}
+            isFocused
+            onInputChange={onSearchInput}
+        >
+            <strong>Search:</strong>
+        </InputWithLabel>
+
+        <button type="submit" disabled={!searchTerm}> Search </button>
+    </form>
+);
+
 const InputWithLabel = ({
     id,
     value,
@@ -233,6 +244,12 @@ const InputWithLabel = ({
             />
         </>
     );
+};
+
+SearchForm.propTypes = {
+    searchTerm: PropTypes.string.isRequired,
+    onSearchInput: PropTypes.func.isRequired,
+    onSearchSubmit: PropTypes.func.isRequired,
 };
 
 InputWithLabel.propTypes = {
