@@ -98,7 +98,6 @@ const Games = () => {
 
     // Load games list from API on component mount
     React.useEffect(() => {
-        // setIsLoading(true);
         dispatchGames({ type: 'GAMES_FETCH_INIT' });
 
         getAsyncGames().then(result => {
@@ -328,7 +327,7 @@ const AddGame = ({ handleClick, inputRefName, inputRefPrice, inputRefCategory, i
                 <InputWithLabelForm id="add-a-game-available" type="checkbox" inputRef={inputRefAvailable}>Available</InputWithLabelForm>
             </div>
             <button type="button" onClick={handleClick}>
-                Submit form
+                Add
             </button>
         </form>
     </>
