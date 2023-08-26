@@ -7,6 +7,7 @@ import Todos from "./pages/Todos";
 import Games from "./pages/Games";
 import HackerNews from "./pages/HackerNews";
 import NoPage from "./pages/NoPage";
+
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(

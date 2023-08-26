@@ -14,7 +14,7 @@ const CurrencyButtons = () => {
 
 const CurrencyButton = ({ onClick, children }) => {
     return (
-        <button type="button" onClick={onClick}>
+        <button className="button button_large" type="button" onClick={onClick}>
             {children}
         </button>
     )

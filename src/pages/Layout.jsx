@@ -1,23 +1,35 @@
 import { Outlet } from "react-router-dom";
 import { Link } from "react-router-dom";
 
+import '../index.css'
+
 const Layout = () => {
     return (
         <>
-            <h1>Menu</h1>
             <nav>
-                <ul>
-                    <li>
-                        <Link to="/">Home</Link>
+                <ul style={{ display: "flex", listStyle: "none", alignItems: "center" }}>
+                    <li className="site-title" style={{ marginRight: "1rem" }}>
+                        The Road to React
                     </li>
-                    <li>
-                        <Link to="/todos">Todos</Link>
+                    <li style={{ marginRight: "1rem" }}>
+                        <Link to="/">
+                            <button className="material-button">Home</button>
+                        </Link>
                     </li>
-                    <li>
-                        <Link to="/games-list">Games list</Link>
+                    <li style={{ marginRight: "1rem" }}>
+                        <Link to="/todos">
+                            <button className="material-button">Todos</button>
+                        </Link>
                     </li>
-                    <li>
-                        <Link to="/hacker-news">Hacker News</Link>
+                    <li style={{ marginRight: "1rem" }}>
+                        <Link to="/games-list">
+                            <button className="material-button">Games list</button>
+                        </Link>
+                    </li>
+                    <li style={{ marginRight: "1rem" }}>
+                        <Link to="/hacker-news">
+                            <button className="material-button">Hacker News</button>
+                        </Link>
                     </li>
                 </ul>
             </nav>
@@ -25,6 +37,5 @@ const Layout = () => {
         </>
     );
 };
-
 
 export default Layout;

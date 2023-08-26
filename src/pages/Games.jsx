@@ -161,14 +161,21 @@ const Games = () => {
 
     return (
         <div>
-            <h1>The road to React</h1>
+            <h1 className="headline-primary">Game list</h1>
 
             <Search onSearch={handleSearch} inputSearchValues={searchTerms}>Search:</Search>
 
             <CurrencyProvider>
-                Display prices in :
-                <div className="currency-button">
-                    <CurrencyButtons />
+                <div style={{ display: "flex", justifyContent: "space-between", width:"90%" }}>
+                    <div>
+                        <AddGame handleClick={handleClickAddGame} inputRefName={addGameInputName} inputRefPrice={addGameInputPrice} inputRefCategory={addGameInputCategory} inputRefAvailable={addGameInputAvailable} />
+                    </div>
+                    <div>
+                        Display prices in :
+                        <div className="currency-button">
+                            <CurrencyButtons />
+                        </div>
+                    </div>
                 </div>
 
                 <TableGames searchName={searchTerms.name}
@@ -176,9 +183,6 @@ const Games = () => {
                     searchPrice={searchTerms.price}
                     games={games} onRemoveItem={handleRemoveItem} />
             </CurrencyProvider>
-
-            <AddGame
-                handleClick={handleClickAddGame} inputRefName={addGameInputName} inputRefPrice={addGameInputPrice} inputRefCategory={addGameInputCategory} inputRefAvailable={addGameInputAvailable} />
 
         </div>
     );
@@ -222,8 +226,6 @@ const TableGames = ({ searchName, searchCategory, searchPrice, games, onRemoveIt
     const { value } = useCurrency();
     return (
         <div>
-            <h2>Games list</h2>
-
             <Table data={tableData} sort={sort} className="list-table game">
                 {(tableList) => (
                     <React.Fragment>
@@ -258,7 +260,7 @@ const TableGames = ({ searchName, searchCategory, searchPrice, games, onRemoveIt
                                             <Cell>{item.category}</Cell>
                                             <Cell>{item.available ? 'Yes' : 'No'}</Cell>
                                             <Cell>
-                                                <button onClick={() => onRemoveItem(item)}>Remove</button>
+                                                <button className="button button_small" onClick={() => onRemoveItem(item)}>Remove</button>
                                             </Cell>
                                         </Row>)
                                 })
@@ -288,10 +290,10 @@ const InputWithLabel = ({ id, type = "text", onChange, value, isFocused, isRequi
     );
 };
 
-const InputWithLabelForm = ({ id, type = "text", onChange, inputRef, value, isRequired, children }) => {
+const InputWithLabelForm = ({ id, type = "text", width = "100px", onChange, inputRef, value, isRequired, children }) => {
     return (
         <>
-            <label htmlFor={id}>{children} </label><input ref={inputRef} id={id} type={type} onChange={onChange} value={value} required={isRequired} />
+            <label htmlFor={id}>{children} </label><input ref={inputRef} id={id} style={{width: width}} type={type} onChange={onChange} value={value} required={isRequired} />
         </>
     );
 };
@@ -318,17 +320,20 @@ const Search = ({ onSearch, inputSearchValues, children }) => (
 
 const AddGame = ({ handleClick, inputRefName, inputRefPrice, inputRefCategory, inputRefAvailable }) => (
     <>
-        <h2>Add game</h2>
         <form className="add-game-form">
             <div>
-                <InputWithLabelForm id="add-a-game-name" inputRef={inputRefName} isRequired>Name</InputWithLabelForm>
-                <InputWithLabelForm id="add-a-game-price" type="number" inputRef={inputRefPrice} isRequired>Price</InputWithLabelForm>
-                <InputWithLabelForm id="add-a-game-category" inputRef={inputRefCategory} isRequired>Category</InputWithLabelForm>
-                <InputWithLabelForm id="add-a-game-available" type="checkbox" inputRef={inputRefAvailable}>Available</InputWithLabelForm>
+                <div>
+                    <InputWithLabelForm id="add-a-game-name" width="240px" inputRef={inputRefName} isRequired>Name</InputWithLabelForm>
+                    <InputWithLabelForm id="add-a-game-price" type="number" inputRef={inputRefPrice} isRequired>Price</InputWithLabelForm>
+                    <InputWithLabelForm id="add-a-game-category" width="150px" inputRef={inputRefCategory} isRequired>Category</InputWithLabelForm>
+                    <InputWithLabelForm id="add-a-game-available" type="checkbox" inputRef={inputRefAvailable}>Available</InputWithLabelForm>
+                </div>
+                <div>
+                    <button className="button button_large" type="button" onClick={handleClick}>
+                        Add
+                    </button>
+                </div>
             </div>
-            <button type="button" onClick={handleClick}>
-                Add
-            </button>
         </form>
     </>
 );
@@ -353,6 +358,7 @@ InputWithLabel.propTypes = {
 InputWithLabelForm.propTypes = {
     id: PropTypes.string,
     type: PropTypes.string,
+    width: PropTypes.string,
     onChange: PropTypes.func,
     inputRef: PropTypes.object,
     value: PropTypes.string,

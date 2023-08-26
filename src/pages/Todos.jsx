@@ -131,8 +131,10 @@ const Todos = () => {
         <div>
             <h1>Todos</h1>
 
-            <FilterTodos handleShowAll={handleShowAll} handleShowComplete={handleShowComplete} handleShowIncomplete={handleShowIncomplete} />
-            <FormAddTask onSubmit={handleSubmit} task={task} handleChangeInput={handleChangeInput} />
+            <div style={{display: "flex"}}>
+                <FormAddTask onSubmit={handleSubmit} task={task} handleChangeInput={handleChangeInput} />
+                <FilterTodos handleShowAll={handleShowAll} handleShowComplete={handleShowComplete} handleShowIncomplete={handleShowIncomplete} />
+            </div>
             <ListTodos data={filteredTodos} handleChangeCheckbox={handleChangeCheckbox} onRemoveItem={handleRemoveItem} />
 
         </div>
@@ -174,7 +176,7 @@ const ListTodos = ({ data, handleChangeCheckbox, onRemoveItem }) => {
                             <Row key={item.id}>
                                 <Cell>{item.task}</Cell>
                                 <Cell><input type="checkbox" checked={item.complete} onChange={() => handleChangeCheckbox(item)} /></Cell>
-                                <Cell><button onClick={() => onRemoveItem(item)}>Remove</button></Cell>
+                                <Cell><button className="button button_small" onClick={() => onRemoveItem(item)}>Remove</button></Cell>
                             </Row>
                         ))}
                     </Body>
@@ -186,24 +188,26 @@ const ListTodos = ({ data, handleChangeCheckbox, onRemoveItem }) => {
 
 const FormAddTask = ({ onSubmit, task, handleChangeInput }) => {
     return (
-        <form onSubmit={onSubmit}>
-            <input type="text" id="task" name="task" value={task} onChange={handleChangeInput} />
-            <button type="submit">Add</button>
-        </form>
+        <div>
+            <form onSubmit={onSubmit} style={{ display: "flex" }}>
+                <input type="text" id="task" name="task" value={task} onChange={handleChangeInput} />
+                <button className="button button_large" type="submit">Add</button>
+            </form>
+        </div>
     );
 };
 
 const FilterTodos = ({ handleShowAll, handleShowComplete, handleShowIncomplete }) => {
     return (
-        <div>
+        <div style={{ marginLeft: "55%", display: "flex" }}>
             <div>
-                <button type="button" onClick={handleShowAll}>
+                <button className="button button_large" type="button" onClick={handleShowAll}>
                     Show All
                 </button>
-                <button type="button" onClick={handleShowComplete}>
+                <button className="button button_large" type="button" onClick={handleShowComplete}>
                     Show Complete
                 </button>
-                <button type="button" onClick={handleShowIncomplete}>
+                <button className="button button_large" type="button" onClick={handleShowIncomplete}>
                     Show Incomplete
                 </button>
             </div>

@@ -147,11 +147,10 @@ const HackerNews = () => {
     });
 
     return (
-        <div>
-            <h1>My Hacker Stories</h1>
+        <div className="container-hn">
+            <h1 className="headline-primary">My Hacker Stories</h1>
 
             <SearchForm searchTerm={searchTerm} onSearchInput={handleSearchInput} onSearchSubmit={handleSearchSubmit}/>
-            <hr />
 
             <Table data={tableData} sort={sort} className="list-table story">
                 {
@@ -180,7 +179,7 @@ const HackerNews = () => {
                                                         <Cell>{item.num_comments}</Cell>
                                                         <Cell>{item.points}</Cell>
                                                         <Cell>
-                                                            <button type="button" onClick={() => handleRemoveStory(item)}>Remove</button>
+                                                            <button className="button button_small" type="button" onClick={() => handleRemoveStory(item)}>Remove</button>
                                                         </Cell>
                                                     </Row>
                                                 )))
@@ -211,7 +210,7 @@ const SearchForm = ({
             <strong>Search:</strong>
         </InputWithLabel>
 
-        <button type="submit" disabled={!searchTerm}> Search </button>
+        <button className="button button_large" type="submit" disabled={!searchTerm}> Search </button>
     </form>
 );
 

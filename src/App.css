@@ -1,3 +1,13 @@
+.container-hn {
+    height: 100vw;
+    padding: 20px;
+
+    background: #83a4d4;
+    background: linear-gradient(to left, #b6fbff, #83a4d4);
+
+    color: #171212;
+}
+
 .list-table {
     width: 90%;
     border-collapse: collapse;
@@ -24,6 +34,11 @@
 
 .list-table.story th {
     background-color: #f09104;
+    color: white;
+}
+
+.list-table.todo th {
+    background-color: #296cf1;
     color: white;
 }
 
@@ -70,13 +85,8 @@ input[type=checkbox] {
 }
 
 .add-game-form button {
-    width: 10%;
-    background-color: #4CAF50;
-    color: white;
     padding: 12px 20px;
     margin: 8px 0;
-    border: none;
-    border-radius: 4px;
     cursor: pointer;
 }
 
@@ -88,4 +98,26 @@ input[type=checkbox] {
     padding: 10px;
     cursor: pointer;
     margin: 5px;
+}
+
+.button {
+    background: transparent;
+    border: 1px solid #171212;
+    padding: 5px;
+    cursor: pointer;
+
+    transition: all 0.1s ease-in;
+}
+
+.button:hover {
+    background: #171212;
+    color: #ffffff;
+}
+
+.button_small {
+    padding: 5px;
+}
+
+.button_large {
+    padding: 10px;
 }
