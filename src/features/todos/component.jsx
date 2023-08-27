@@ -1,4 +1,4 @@
-import '../App.css';
+import '../../styles/App.css';
 import React from 'react';
 import PropTypes from "prop-types";
 import { v4 as uuidv4 } from 'uuid';
@@ -19,7 +19,7 @@ import {
     StyledHeadlinePrimary,
     StyledButtonSmall,
     StyledButtonLarge,
-} from "../components/StyledComponents";
+} from "../../components/styled-components";
 
 const initialTodos = [
     { id: uuidv4(), task: 'Apprendre React', complete: false },
@@ -237,4 +237,4 @@ FilterTodos.propTypes = {
 };
 
 
-export default Todos;
+export { Todos };

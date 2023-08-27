@@ -1,6 +1,6 @@
-import '../App.css';
-import { CurrencyProvider, useCurrency } from '../context/currency';
-import CurrencyButtons from '../components/CurrencyButtons';
+import '../../styles/App.css';
+import { CurrencyProvider, useCurrency } from '../../context/currency';
+import CurrencyButtons from '../../components/currency-buttons';
 import React from 'react';
 import PropTypes from "prop-types";
 import { v4 as uuidv4 } from 'uuid';
@@ -21,7 +21,7 @@ import {
     StyledHeadlinePrimary,
     StyledButtonSmall,
     StyledButtonLarge,
-} from "../components/StyledComponents";
+} from "../../components/styled-components";
 
 
 const useObjectStorageState = (key, initialState) => {
@@ -384,4 +384,4 @@ AddGame.propTypes = {
     inputRefAvailable: PropTypes.object,
 };
 
-export default Games;
+export { Games };

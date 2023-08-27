@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { Link } from "react-router-dom";
 
-import '../index.css'
+import '../styles/index.css'
 
 const Layout = () => {
     return (

@@ -1,4 +1,4 @@
-import "../App.css";
+import "../../styles/App.css";
 import React from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
@@ -10,7 +10,7 @@ import {
     StyledButtonSmall,
     StyledButtonLarge,
     StyledSearchForm,
-} from "../components/StyledComponents";
+} from "../../components/styled-components";
 
 const ENDPOINT_API = "https://hn.algolia.com/api/v1/search?query=";
 
@@ -237,4 +237,4 @@ InputWithLabel.propTypes = {
     children: PropTypes.node.isRequired,
 };
 
-export default HackerNews;
+export { HackerNews };

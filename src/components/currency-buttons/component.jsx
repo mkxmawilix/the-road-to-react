@@ -1,6 +1,6 @@
-import { useCurrency, CURRENCIES } from "../context/currency";
+import { useCurrency, CURRENCIES } from "../../context/currency";
 import PropTypes from "prop-types";
-import { StyledButtonLarge } from "./StyledComponents";
+import { StyledButtonLarge } from "../styled-components";
 
 
 const CurrencyButtons = () => {
@@ -26,5 +26,5 @@ CurrencyButton.propTypes = {
     children: PropTypes.node.isRequired,
 };
 
-export default CurrencyButtons;
+export { CurrencyButtons };
 
