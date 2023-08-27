@@ -17,6 +17,11 @@ import {
     useSort,
     HeaderCellSort
 } from '@table-library/react-table-library/sort';
+import {
+    StyledHeadlinePrimary,
+    StyledButtonSmall,
+    StyledButtonLarge,
+} from "../components/StyledComponents";
 
 
 const useObjectStorageState = (key, initialState) => {
@@ -161,7 +166,7 @@ const Games = () => {
 
     return (
         <div>
-            <h1 className="headline-primary">Game list</h1>
+            <StyledHeadlinePrimary>Game list</StyledHeadlinePrimary>
 
             <Search onSearch={handleSearch} inputSearchValues={searchTerms}>Search:</Search>
 
@@ -260,7 +265,7 @@ const TableGames = ({ searchName, searchCategory, searchPrice, games, onRemoveIt
                                             <Cell>{item.category}</Cell>
                                             <Cell>{item.available ? 'Yes' : 'No'}</Cell>
                                             <Cell>
-                                                <button className="button button_small" onClick={() => onRemoveItem(item)}>Remove</button>
+                                                <StyledButtonSmall onClick={() => onRemoveItem(item)}>Remove</StyledButtonSmall>
                                             </Cell>
                                         </Row>)
                                 })
@@ -329,9 +334,9 @@ const AddGame = ({ handleClick, inputRefName, inputRefPrice, inputRefCategory, i
                     <InputWithLabelForm id="add-a-game-available" type="checkbox" inputRef={inputRefAvailable}>Available</InputWithLabelForm>
                 </div>
                 <div>
-                    <button className="button button_large" type="button" onClick={handleClick}>
+                    <StyledButtonLarge type="button" onClick={handleClick}>
                         Add
-                    </button>
+                    </StyledButtonLarge>
                 </div>
             </div>
         </form>

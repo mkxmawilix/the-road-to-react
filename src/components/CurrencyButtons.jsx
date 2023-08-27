@@ -1,5 +1,6 @@
 import { useCurrency, CURRENCIES } from "../context/currency";
 import PropTypes from "prop-types";
+import { StyledButtonLarge } from "./StyledComponents";
 
 
 const CurrencyButtons = () => {
@@ -14,9 +15,9 @@ const CurrencyButtons = () => {
 
 const CurrencyButton = ({ onClick, children }) => {
     return (
-        <button className="button button_large" type="button" onClick={onClick}>
+        <StyledButtonLarge type="button" onClick={onClick}>
             {children}
-        </button>
+        </StyledButtonLarge>
     )
 };
 

@@ -15,7 +15,11 @@ import {
     useSort,
     HeaderCellSort
 } from '@table-library/react-table-library/sort';
-
+import {
+    StyledHeadlinePrimary,
+    StyledButtonSmall,
+    StyledButtonLarge,
+} from "../components/StyledComponents";
 
 const initialTodos = [
     { id: uuidv4(), task: 'Apprendre React', complete: false },
@@ -129,7 +133,7 @@ const Todos = () => {
 
     return (
         <div>
-            <h1>Todos</h1>
+            <StyledHeadlinePrimary>Todos</StyledHeadlinePrimary>
 
             <div style={{display: "flex"}}>
                 <FormAddTask onSubmit={handleSubmit} task={task} handleChangeInput={handleChangeInput} />
@@ -176,7 +180,7 @@ const ListTodos = ({ data, handleChangeCheckbox, onRemoveItem }) => {
                             <Row key={item.id}>
                                 <Cell>{item.task}</Cell>
                                 <Cell><input type="checkbox" checked={item.complete} onChange={() => handleChangeCheckbox(item)} /></Cell>
-                                <Cell><button className="button button_small" onClick={() => onRemoveItem(item)}>Remove</button></Cell>
+                                <Cell><StyledButtonSmall onClick={() => onRemoveItem(item)}>Remove</StyledButtonSmall></Cell>
                             </Row>
                         ))}
                     </Body>
@@ -191,7 +195,7 @@ const FormAddTask = ({ onSubmit, task, handleChangeInput }) => {
         <div>
             <form onSubmit={onSubmit} style={{ display: "flex" }}>
                 <input type="text" id="task" name="task" value={task} onChange={handleChangeInput} />
-                <button className="button button_large" type="submit">Add</button>
+                <StyledButtonLarge type="submit">Add</StyledButtonLarge>
             </form>
         </div>
     );
@@ -201,15 +205,15 @@ const FilterTodos = ({ handleShowAll, handleShowComplete, handleShowIncomplete }
     return (
         <div style={{ marginLeft: "55%", display: "flex" }}>
             <div>
-                <button className="button button_large" type="button" onClick={handleShowAll}>
+                <StyledButtonLarge type="button" onClick={handleShowAll}>
                     Show All
-                </button>
-                <button className="button button_large" type="button" onClick={handleShowComplete}>
+                </StyledButtonLarge>
+                <StyledButtonLarge type="button" onClick={handleShowComplete}>
                     Show Complete
-                </button>
-                <button className="button button_large" type="button" onClick={handleShowIncomplete}>
+                </StyledButtonLarge>
+                <StyledButtonLarge type="button" onClick={handleShowIncomplete}>
                     Show Incomplete
-                </button>
+                </StyledButtonLarge>
             </div>
         </div>
     );
