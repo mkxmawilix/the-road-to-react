@@ -1,8 +1,8 @@
-import React from 'react'
+import React from 'react';
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Layout from "./pages/layout";
-import Home from "./pages/home";
+import Layout from "./pages/layout.jsx";
+import Home from "./pages/home.jsx";
 import NoPage from "./pages/no-page";
 import Todos from "./features/todos";
 import Games from "./features/games-list";
@@ -23,5 +23,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         </Route>
       </Routes>
     </BrowserRouter>
-  </React.StrictMode>,
+  </React.StrictMode>
 )

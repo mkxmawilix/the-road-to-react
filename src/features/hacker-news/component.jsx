@@ -1,4 +1,5 @@
 import "../../styles/App.css";
+import { ReactComponent as Cross} from '../../icons/cross.svg';
 import React from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
@@ -56,17 +57,22 @@ const storiesReducer = (state, action) => {
 };
 
 const useStorageState = (key, initialState) => {
+    const isMounted = React.useRef(false);
     const [value, setValue] = React.useState(localStorage.getItem(key) || initialState);
 
     React.useEffect(() => {
-        localStorage.setItem(key, value);
+        if (!isMounted.current) {
+            isMounted.current = true;
+        } else {
+            localStorage.setItem(key, value);
+        }
     }, [value, key]);
 
     return [value, setValue];
 };
 
 const HackerNews = () => {
-    const [searchTerm, setSearchTerm] = useStorageState("search", "React");
+    const [searchTerm, setSearchTerm] = useStorageState("search", '');
 
     const [url, setUrl] = React.useState(`${ENDPOINT_API}${searchTerm}`);
 
@@ -177,7 +183,7 @@ const HackerNews = () => {
                                                 type="button"
                                                 onClick={() => handleRemoveStory(item)}
                                             >
-                                                Remove
+                                                <Cross height="18px" width="18px" />
                                             </StyledButtonSmall>
                                         </Cell>
                                     </Row>

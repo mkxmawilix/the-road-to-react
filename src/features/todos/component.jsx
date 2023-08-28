@@ -1,57 +1,42 @@
-import '../../styles/App.css';
-import React from 'react';
+import "../../styles/App.css";
+import React from "react";
 import PropTypes from "prop-types";
-import { v4 as uuidv4 } from 'uuid';
-import {
-    Table,
-    Header,
-    HeaderRow,
-    HeaderCell,
-    Body,
-    Row,
-    Cell,
-} from '@table-library/react-table-library/table';
-import {
-    useSort,
-    HeaderCellSort
-} from '@table-library/react-table-library/sort';
-import {
-    StyledHeadlinePrimary,
-    StyledButtonSmall,
-    StyledButtonLarge,
-} from "../../components/styled-components";
+import { v4 as uuidv4 } from "uuid";
+import { Table, Header, HeaderRow, HeaderCell, Body, Row, Cell } from "@table-library/react-table-library/table";
+import { useSort, HeaderCellSort } from "@table-library/react-table-library/sort";
+import { StyledHeadlinePrimary, StyledButtonSmall, StyledButtonLarge } from "../../components/styled-components";
+import { ReactComponent as Cross } from "../../icons/cross.svg";
 
 const initialTodos = [
-    { id: uuidv4(), task: 'Apprendre React', complete: false },
-    { id: uuidv4(), task: 'Apprendre Redux', complete: false },
-    { id: uuidv4(), task: 'Apprendre React Router', complete: false },
-    { id: uuidv4(), task: 'Apprendre React Context', complete: false },
-    { id: uuidv4(), task: 'Apprendre React Hooks', complete: false },
+    { id: uuidv4(), task: "Apprendre React", complete: false },
+    { id: uuidv4(), task: "Apprendre Redux", complete: false },
+    { id: uuidv4(), task: "Apprendre React Router", complete: false },
+    { id: uuidv4(), task: "Apprendre React Context", complete: false },
+    { id: uuidv4(), task: "Apprendre React Hooks", complete: false },
 ];
-
 
 const todoReducer = (state, action) => {
     switch (action.type) {
-        case 'ADD_TODO':
+        case "ADD_TODO":
             return [...state, { id: uuidv4(), task: action.payload.name, complete: false }];
-        case 'DO_TODO':
-            return state.map(todo => {
+        case "DO_TODO":
+            return state.map((todo) => {
                 if (todo.id === action.payload.id) {
                     return { ...todo, complete: true };
                 } else {
                     return todo;
                 }
             });
-        case 'UNDO_TODO':
-            return state.map(todo => {
+        case "UNDO_TODO":
+            return state.map((todo) => {
                 if (todo.id === action.payload.id) {
                     return { ...todo, complete: false };
                 } else {
                     return todo;
                 }
             });
-        case 'DELETE_TODO':
-            return state.filter(todo => todo.id !==action.payload.id);
+        case "DELETE_TODO":
+            return state.filter((todo) => todo.id !== action.payload.id);
         default:
             return state;
     }
@@ -59,33 +44,28 @@ const todoReducer = (state, action) => {
 
 const filterReducer = (state, action) => {
     switch (action.type) {
-        case 'SHOW_ALL':
-            return 'ALL';
-        case 'SHOW_COMPLETE':
-            return 'COMPLETE';
-        case 'SHOW_INCOMPLETE':
-            return 'INCOMPLETE';
+        case "SHOW_ALL":
+            return "ALL";
+        case "SHOW_COMPLETE":
+            return "COMPLETE";
+        case "SHOW_INCOMPLETE":
+            return "INCOMPLETE";
         default:
             throw new Error();
     }
 };
 
-
 const Todos = () => {
-
-    const [todos, dispatchTodos] = React.useReducer(
-        todoReducer,
-        initialTodos
-    );
-    const [filter, dispatchFilter] = React.useReducer(filterReducer, 'ALL');
-    const [task, setTask] = React.useState('');
+    const [todos, dispatchTodos] = React.useReducer(todoReducer, initialTodos);
+    const [filter, dispatchFilter] = React.useReducer(filterReducer, "ALL");
+    const [task, setTask] = React.useState("");
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        if (event.target.task.value !== '') {
-            dispatchTodos({ type: 'ADD_TODO', payload: { name: event.target.task.value } });
+        if (event.target.task.value !== "") {
+            dispatchTodos({ type: "ADD_TODO", payload: { name: event.target.task.value } });
         }
-        setTask('');
+        setTask("");
     };
 
     const handleChangeInput = (event) => {
@@ -94,37 +74,37 @@ const Todos = () => {
 
     const handleChangeCheckbox = (item) => {
         dispatchTodos({
-            type: item.complete ? 'UNDO_TODO' : 'DO_TODO',
+            type: item.complete ? "UNDO_TODO" : "DO_TODO",
             payload: item,
-        })
+        });
     };
 
     const handleRemoveItem = (item) => {
-        dispatchTodos({ type: 'DELETE_TODO', payload: item });
+        dispatchTodos({ type: "DELETE_TODO", payload: item });
     };
 
     const handleShowAll = () => {
-        dispatchFilter({ type: 'SHOW_ALL' });
+        dispatchFilter({ type: "SHOW_ALL" });
     };
 
     const handleShowComplete = () => {
-        dispatchFilter({ type: 'SHOW_COMPLETE' });
+        dispatchFilter({ type: "SHOW_COMPLETE" });
     };
 
     const handleShowIncomplete = () => {
-        dispatchFilter({ type: 'SHOW_INCOMPLETE' });
+        dispatchFilter({ type: "SHOW_INCOMPLETE" });
     };
 
-    const filteredTodos = todos.filter(todo => {
-        if (filter === 'ALL') {
+    const filteredTodos = todos.filter((todo) => {
+        if (filter === "ALL") {
             return true;
         }
 
-        if (filter === 'COMPLETE' && todo.complete) {
+        if (filter === "COMPLETE" && todo.complete) {
             return true;
         }
 
-        if (filter === 'INCOMPLETE' && !todo.complete) {
+        if (filter === "INCOMPLETE" && !todo.complete) {
             return true;
         }
 
@@ -135,37 +115,44 @@ const Todos = () => {
         <div>
             <StyledHeadlinePrimary>Todos</StyledHeadlinePrimary>
 
-            <div style={{display: "flex"}}>
+            <div style={{ display: "flex" }}>
                 <FormAddTask onSubmit={handleSubmit} task={task} handleChangeInput={handleChangeInput} />
-                <FilterTodos handleShowAll={handleShowAll} handleShowComplete={handleShowComplete} handleShowIncomplete={handleShowIncomplete} />
+                <FilterTodos
+                    handleShowAll={handleShowAll}
+                    handleShowComplete={handleShowComplete}
+                    handleShowIncomplete={handleShowIncomplete}
+                />
             </div>
-            <ListTodos data={filteredTodos} handleChangeCheckbox={handleChangeCheckbox} onRemoveItem={handleRemoveItem} />
-
+            <ListTodos
+                data={filteredTodos}
+                handleChangeCheckbox={handleChangeCheckbox}
+                onRemoveItem={handleRemoveItem}
+            />
         </div>
     );
-
 };
 
 const ListTodos = ({ data, handleChangeCheckbox, onRemoveItem }) => {
-    const tableData = { 'nodes': data };
+    const tableData = { nodes: data };
     const sort = useSort(
-        tableData, {
-        onChange: null,
-        state: {
-            sortKey: 'NAME',
-            reverse: false,
+        tableData,
+        {
+            onChange: null,
+            state: {
+                sortKey: "NAME",
+                reverse: false,
+            },
         },
-    }, {
-        sortFns: {
-            NAME: (array) =>
-                array.sort((a, b) => a.task.localeCompare(b.task)),
-            COMPLETE: (array) =>
-                array.sort((a, b) => a.complete - b.complete),
-        },
-    });
+        {
+            sortFns: {
+                NAME: (array) => array.sort((a, b) => a.task.localeCompare(b.task)),
+                COMPLETE: (array) => array.sort((a, b) => a.complete - b.complete),
+            },
+        }
+    );
 
     return (
-        <Table data={tableData} sort={sort}  className="list-table todo">
+        <Table data={tableData} sort={sort} className="list-table todo">
             {(tableList) => (
                 <>
                     <Header>
@@ -179,8 +166,18 @@ const ListTodos = ({ data, handleChangeCheckbox, onRemoveItem }) => {
                         {tableList.map((item) => (
                             <Row key={item.id}>
                                 <Cell>{item.task}</Cell>
-                                <Cell><input type="checkbox" checked={item.complete} onChange={() => handleChangeCheckbox(item)} /></Cell>
-                                <Cell><StyledButtonSmall onClick={() => onRemoveItem(item)}>Remove</StyledButtonSmall></Cell>
+                                <Cell>
+                                    <input
+                                        type="checkbox"
+                                        checked={item.complete}
+                                        onChange={() => handleChangeCheckbox(item)}
+                                    />
+                                </Cell>
+                                <Cell>
+                                    <StyledButtonSmall onClick={() => onRemoveItem(item)}>
+                                        <Cross height="18px" width="18px" />
+                                    </StyledButtonSmall>
+                                </Cell>
                             </Row>
                         ))}
                     </Body>
@@ -235,6 +232,5 @@ FilterTodos.propTypes = {
     handleShowComplete: PropTypes.func,
     handleShowIncomplete: PropTypes.func,
 };
-
 
 export { Todos };

@@ -22,6 +22,7 @@ import {
     StyledButtonSmall,
     StyledButtonLarge,
 } from "../../components/styled-components";
+import { ReactComponent as Cross } from '../../icons/cross.svg';
 
 
 const useObjectStorageState = (key, initialState) => {
@@ -265,7 +266,9 @@ const TableGames = ({ searchName, searchCategory, searchPrice, games, onRemoveIt
                                             <Cell>{item.category}</Cell>
                                             <Cell>{item.available ? 'Yes' : 'No'}</Cell>
                                             <Cell>
-                                                <StyledButtonSmall onClick={() => onRemoveItem(item)}>Remove</StyledButtonSmall>
+                                                <StyledButtonSmall onClick={() => onRemoveItem(item)}>
+                                                    <Cross height="18px" width="18px" />
+                                                </StyledButtonSmall>
                                             </Cell>
                                         </Row>)
                                 })
