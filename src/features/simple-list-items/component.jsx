@@ -17,11 +17,11 @@ const initialItems = [
     },
     {
         id: uuidv4(),
-        name: "Simple item 1",
+        name: "Simple item 2",
     },
     {
         id: uuidv4(),
-        name: "Simple item 1",
+        name: "Simple item 3",
     },
 ]
 
@@ -33,9 +33,9 @@ const SimpleListItems = () => {
         setName(event.target.value);
     };
 
-    const handleRemoveItem = (item) => {
+    const handleRemoveItem = React.useCallback((item) => {
         setList(list.filter((i) => i.id !== item.id));
-    };
+    }, [list]);
 
     const handleAddItem = () => {
         if (name === '') {
@@ -62,7 +62,7 @@ const SimpleListItems = () => {
     );
 };
 
-const List = ({ items, onRemoveItem }) => (
+const List = React.memo(({ items, onRemoveItem }) => (
     <div>
         <ul>
             {items.map((item) => (
@@ -70,7 +70,8 @@ const List = ({ items, onRemoveItem }) => (
             ))}
         </ul>
     </div>
-);
+));
+List.displayName = 'List';
 
 const Item = ({ item, onRemoveItem }) => (
     <li>
