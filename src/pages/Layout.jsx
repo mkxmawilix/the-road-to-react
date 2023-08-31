@@ -17,6 +17,11 @@ const Layout = () => {
                         </Link>
                     </li>
                     <li style={{ marginRight: "1rem" }}>
+                        <Link to="/simple-list-items">
+                            <button className="material-button">Simple list items</button>
+                        </Link>
+                    </li>
+                    <li style={{ marginRight: "1rem" }}>
                         <Link to="/todos">
                             <button className="material-button">Todos</button>
                         </Link>
