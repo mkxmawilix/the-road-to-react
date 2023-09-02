@@ -71,6 +71,10 @@ const useStorageState = (key, initialState) => {
     return [value, setValue];
 };
 
+const getSumComments = (stories) => {
+    return stories.reduce((result, value) => result + value.num_comments, 0);
+};
+
 const HackerNews = () => {
     const [searchTerm, setSearchTerm] = useStorageState("search", '');
 
@@ -138,12 +142,17 @@ const HackerNews = () => {
         }
     );
 
+    const sumComments = React.useMemo(() => getSumComments(stories.data), [stories]);
+
     return (
         <StyledContainer>
             <StyledHeadlinePrimary>My Hacker Stories</StyledHeadlinePrimary>
 
             <SearchForm searchTerm={searchTerm} onSearchInput={handleSearchInput} onSearchSubmit={handleSearchSubmit} />
 
+            <div>
+                <p>Sum comments: {sumComments}</p>
+            </div>
             <Table data={tableData} sort={sort} className="list-table story">
                 {(tableList) => (
                     <>
