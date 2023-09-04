@@ -1,0 +1,21 @@
+.item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #ccc;
+}
+
+.item-header {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+
+.item > span {
+    width: 10%;
+}
+
+.item > span:first-child {
+    width: 40%;
+}
