@@ -12,6 +12,24 @@
     font-weight: bold;
 }
 
+.item.item-header > span > button {
+    background-color: transparent;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+
+    transition: all 0.1s ease-in;
+}
+
+.item.item-header > span > button:focus {
+    font-weight: bolder;
+}
+
+.item.item-header > span > button,svg {
+    display: inline-block;
+    vertical-align: middle;
+}
+
 .item > span {
     width: 10%;
 }
