@@ -32,7 +32,7 @@ const StyledButton = styled.button`
 
     &:hover > svg > g {
         fill: #ffffff;
-        stroke: #ffffff
+        stroke: #ffffff;
     }
 `;
 
@@ -50,4 +50,17 @@ const StyledSearchForm = styled.form`
     align-items: baseline;
 `;
 
-export { StyledContainer, StyledHeadlinePrimary, StyledButton, StyledButtonSmall, StyledButtonLarge, StyledSearchForm };
+const StyledDivLineFlexNoStyle = styled.div`
+    display: inline-flex;
+    list-style-type: none;
+`;
+
+export {
+    StyledContainer,
+    StyledHeadlinePrimary,
+    StyledButton,
+    StyledButtonSmall,
+    StyledButtonLarge,
+    StyledSearchForm,
+    StyledDivLineFlexNoStyle,
+};

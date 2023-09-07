@@ -11,6 +11,7 @@ import {
     StyledButtonSmall,
     StyledButtonLarge,
     StyledSearchForm,
+    StyledDivLineFlexNoStyle
 } from "../../components/styled-components";
 
 const ENDPOINT_API = "https://hn.algolia.com/api/v1/search?query=";
@@ -75,10 +76,31 @@ const getSumComments = (stories) => {
     return stories.reduce((result, value) => result + value.num_comments, 0);
 };
 
-const HackerNews = () => {
-    const [searchTerm, setSearchTerm] = useStorageState("search", '');
+const getUrl = (searchTerm) => `${ENDPOINT_API}${searchTerm}`;
+const extractSearchTerm = (url) => url.replace(ENDPOINT_API, "");
+const getLastSearches = (urls) => 
+    urls
+    .reduce((result, url, index) => {
+        const searchTerm = extractSearchTerm(url);
+        if (index === 0) {
+            return result.concat(searchTerm);
+        }
 
-    const [url, setUrl] = React.useState(`${ENDPOINT_API}${searchTerm}`);
+        const previousSearchTerm = result[result.length - 1];
+        if (searchTerm === previousSearchTerm) {
+            return result;
+        } else {
+            return result.concat(searchTerm);
+        }
+    }, [])
+    .slice(-6)
+    .slice(0, -1)
+    .map(extractSearchTerm);
+
+const HackerNews = () => {
+    const [searchTerm, setSearchTerm] = useStorageState("search", 'react');
+
+    const [urls, setUrls] = React.useState([getUrl(searchTerm)]);
 
     const [stories, dispatchStories] = React.useReducer(storiesReducer, {
         data: [],
@@ -91,7 +113,8 @@ const HackerNews = () => {
         dispatchStories({ type: "STORIES_FETCH_INIT" });
 
         try {
-            const result = await axios.get(url);
+            const lastUrl = urls[urls.length - 1];
+            const result = await axios.get(lastUrl);
             dispatchStories({
                 type: "STORIES_FETCH_SUCCESS",
                 payload: result.data.hits,
@@ -99,7 +122,7 @@ const HackerNews = () => {
         } catch {
             dispatchStories({ type: "STORIES_FETCH_FAILURE" });
         }
-    }, [url]);
+    }, [urls]);
 
     React.useEffect(() => {
         handleFetchStories();
@@ -116,9 +139,19 @@ const HackerNews = () => {
         setSearchTerm(event.target.value);
     };
 
+    const handleSearch = (searchTerm) => {
+        const url = getUrl(searchTerm);
+        setUrls(urls.concat(url));
+    };
+
     const handleSearchSubmit = (event) => {
-        setUrl(`${ENDPOINT_API}${searchTerm}`);
+        handleSearch(searchTerm)
         event.preventDefault();
+    };
+
+    const handleLastSearch = (searchTerm) => {
+        setSearchTerm(searchTerm);
+        handleSearch(searchTerm)
     };
 
     const tableData = { nodes: stories.data };
@@ -143,13 +176,14 @@ const HackerNews = () => {
     );
 
     const sumComments = React.useMemo(() => getSumComments(stories.data), [stories]);
+    const lastSearches  = getLastSearches(urls);
 
     return (
         <StyledContainer>
             <StyledHeadlinePrimary>My Hacker Stories</StyledHeadlinePrimary>
 
             <SearchForm searchTerm={searchTerm} onSearchInput={handleSearchInput} onSearchSubmit={handleSearchSubmit} />
-
+            <LastSearches lastSearches={lastSearches} handleLastSearch={handleLastSearch} />
             <div>
                 <p>Sum comments: {sumComments}</p>
             </div>
@@ -219,6 +253,19 @@ const SearchForm = ({ searchTerm, onSearchInput, onSearchSubmit }) => (
     </StyledSearchForm>
 );
 
+const LastSearches = ({lastSearches, handleLastSearch}) => {
+    return (
+        <StyledDivLineFlexNoStyle>
+            <p>Last searches:</p>
+            {lastSearches.map((searchTerm, index) => (
+                <StyledButtonLarge key={searchTerm + index} onClick={() => handleLastSearch(searchTerm)}>
+                    {searchTerm}
+                </StyledButtonLarge>
+            ))}
+        </StyledDivLineFlexNoStyle>
+    );
+};
+
 const InputWithLabel = ({ id, value, type = "text", onInputChange, isFocused, children }) => {
     const inputRef = React.useRef();
 
@@ -241,6 +288,11 @@ SearchForm.propTypes = {
     searchTerm: PropTypes.string.isRequired,
     onSearchInput: PropTypes.func.isRequired,
     onSearchSubmit: PropTypes.func.isRequired,
+};
+
+LastSearches.propTypes = {
+    lastSearches: PropTypes.arrayOf(PropTypes.object),
+    handleLastSearch: PropTypes.func,
 };
 
 InputWithLabel.propTypes = {
